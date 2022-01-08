@@ -18,7 +18,11 @@ func (i Instruction) Code() string {
 	if i.Kind == "A" {
 		return fmt.Sprintf("0%015b", i.Value)
 	}
-	return ""
+	return fmt.Sprintf("111%s%s%s", compMap[i.Comp], "000", "000")
+}
+
+var compMap = map[string]string{
+	"D+A": "0000010",
 }
 
 // ProcessLine:

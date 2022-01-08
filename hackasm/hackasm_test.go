@@ -97,10 +97,33 @@ func TestInstructionCode(t *testing.T) {
 			},
 			want: "0111111111111111",
 		},
+		{
+			name: "C-inst (simple)",
+			inst: hackasm.Instruction{
+				Kind: "C",
+				Comp: "D+A",
+			},
+			want: "1110000010000000",
+		},
+		{
+			name: "C-inst (destination)",
+			inst: hackasm.Instruction{
+				Kind: "C",
+				Dest: "ADM",
+				Comp: "D&M",
+			},
+			want: "1111000000111000",
+		},
 	}
 	for _, tt := range testcases {
+		if len(tt.want) != 16 {
+			t.Fatalf("case %q is incorrect", tt.want)
+		}
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.inst.Code()
+			if len(got) != 16 {
+				t.Errorf("want length of 16, but got %d", len(got))
+			}
 			if got != tt.want {
 				t.Errorf("want %q, but got %q", tt.want, got)
 			}
