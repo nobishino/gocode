@@ -1,6 +1,10 @@
 package hackasm
 
-import "strings"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type Instruction struct {
 	Kind  string // A or C
@@ -8,6 +12,13 @@ type Instruction struct {
 	Dest  string
 	Comp  string
 	Jump  string
+}
+
+func (i Instruction) Code() string {
+	if i.Kind == "A" {
+		return fmt.Sprintf("0%015b", i.Value)
+	}
+	return ""
 }
 
 // ProcessLine:
@@ -22,9 +33,13 @@ func Parse(line string) Instruction {
 }
 
 func parseA(line string) Instruction {
+	v, err := strconv.ParseUint(line[1:], 10, 15)
+	if err != nil {
+		panic(err)
+	}
 	return Instruction{
 		Kind:  "A",
-		Value: 15,
+		Value: uint16(v),
 	}
 }
 

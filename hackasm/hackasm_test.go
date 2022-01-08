@@ -29,6 +29,14 @@ func TestParser(t *testing.T) {
 			},
 		},
 		{
+			name: "A-inst",
+			in:   "@200",
+			want: hackasm.Instruction{
+				Kind:  "A",
+				Value: 200,
+			},
+		},
+		{
 			name: "C-inst",
 			in:   "D+A",
 			want: hackasm.Instruction{
@@ -62,6 +70,39 @@ func TestParser(t *testing.T) {
 			got := hackasm.Parse(tt.in)
 			if got != tt.want {
 				t.Errorf("want %v, but got %v", tt.want, got)
+			}
+		})
+	}
+}
+
+func TestInstructionCode(t *testing.T) {
+	testcases := []struct {
+		name string
+		inst hackasm.Instruction
+		want string
+	}{
+		{
+			name: "A-inst",
+			inst: hackasm.Instruction{
+				Kind:  "A",
+				Value: 1,
+			},
+			want: "0000000000000001",
+		},
+		{
+			name: "A-inst 2",
+			inst: hackasm.Instruction{
+				Kind:  "A",
+				Value: 32767,
+			},
+			want: "0111111111111111",
+		},
+	}
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.inst.Code()
+			if got != tt.want {
+				t.Errorf("want %q, but got %q", tt.want, got)
 			}
 		})
 	}
