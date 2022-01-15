@@ -116,7 +116,8 @@ func parseA(aValue string) Instruction {
 	}
 }
 
-var variableSymbolOffset = 16
+var variableSymbolOffset uint64 = 16
+var variableSymbols = map[string]uint64{}
 
 func calcAValue(aValue string) uint64 {
 	n, err := strconv.ParseUint(aValue, 10, 15)
@@ -130,7 +131,11 @@ func calcAValue(aValue string) uint64 {
 		}
 		return n
 	}
-	panic("error in calcAValue")
+	if _, ok := variableSymbols[aValue]; !ok {
+		variableSymbols[aValue] = variableSymbolOffset
+		variableSymbolOffset++
+	}
+	return variableSymbols[aValue]
 }
 
 func parseC(line string) Instruction {

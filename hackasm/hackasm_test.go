@@ -211,6 +211,18 @@ D=A`,
 				{Kind: "A", Value: 15},
 			},
 		},
+		{
+			name: "handle variable sybol",
+			src: `//
+@R0
+@A
+@B`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 0},
+				{Kind: "A", Value: 16},
+				{Kind: "A", Value: 17},
+			},
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
