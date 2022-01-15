@@ -114,6 +114,15 @@ func TestInstructionCode(t *testing.T) {
 			},
 			want: "1111000000111000",
 		},
+		{
+			name: "D=D&M",
+			inst: hackasm.Instruction{
+				Kind: "C",
+				Dest: "D",
+				Comp: "D&M",
+			},
+			want: "1111000000010000",
+		},
 	}
 	for _, tt := range testcases {
 		if len(tt.want) != 16 {
