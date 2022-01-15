@@ -199,6 +199,18 @@ D=A`,
 				{Kind: "C", Dest: "D", Comp: "A"},
 			},
 		},
+		{
+			name: "handle virtual register",
+			src: `//
+@R0
+@R1
+@R15`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 0},
+				{Kind: "A", Value: 1},
+				{Kind: "A", Value: 15},
+			},
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {

@@ -109,9 +109,15 @@ func Parse(line string) Instruction {
 }
 
 func parseA(line string) Instruction {
-	v, err := strconv.ParseUint(line[1:], 10, 15)
+	value := line[1:]
+	v, err := strconv.ParseUint(value, 10, 15)
 	if err != nil {
-		panic(err)
+		if value[0] == 'R' {
+			v, err = strconv.ParseUint(value[1:], 10, 15)
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
 	return Instruction{
 		Kind:  "A",
