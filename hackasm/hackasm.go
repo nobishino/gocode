@@ -18,11 +18,28 @@ func (i Instruction) Code() string {
 	if i.Kind == "A" {
 		return fmt.Sprintf("0%015b", i.Value)
 	}
-	return fmt.Sprintf("111%s%s%s", compMap[i.Comp], "000", "000")
+	return fmt.Sprintf("111%s%03b%s", compMap[i.Comp], i.destEncode(), "000")
+}
+
+// destの部分をエンコードする
+// 戻り値は3bit整数
+func (i Instruction) destEncode() uint8 {
+	var result uint8 // = 0
+	if strings.Contains(i.Dest, "A") {
+		result += 1 << 2
+	}
+	if strings.Contains(i.Dest, "D") {
+		result += 1 << 1
+	}
+	if strings.Contains(i.Dest, "M") {
+		result += 1
+	}
+	return result
 }
 
 var compMap = map[string]string{
 	"D+A": "0000010",
+	"D&M": "1000000",
 }
 
 // ProcessLine:
@@ -54,7 +71,7 @@ func parseC(line string) Instruction {
 	var head int
 
 	if assign := strings.Index(line, "="); assign != -1 {
-		result.Dest = line[:assign]
+		result.Dest = line[:assign] // = の手前までとりたいのでスライシング
 		head = assign + 1
 	}
 
