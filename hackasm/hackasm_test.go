@@ -183,6 +183,14 @@ D=A`,
 				{Kind: "C", Dest: "D", Comp: "A"},
 			},
 		},
+		{
+			name: "empty line & spaces",
+			src:  "\n @2 \nD=A",
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 2},
+				{Kind: "C", Dest: "D", Comp: "A"},
+			},
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -194,7 +202,7 @@ D=A`,
 				}
 				got := gotInstructions[i]
 				if got != want {
-					t.Errorf("want %+v, but got %+v", want, got)
+					t.Errorf("want %+v, but got %+v at index %d", want, got, i)
 				}
 			}
 			if len(gotInstructions) > len(tt.want) {
