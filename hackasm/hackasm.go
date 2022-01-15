@@ -18,7 +18,7 @@ func (i Instruction) Code() string {
 	if i.Kind == "A" {
 		return fmt.Sprintf("0%015b", i.Value)
 	}
-	return fmt.Sprintf("111%s%03b%s", compMap[i.Comp], i.destEncode(), "000")
+	return fmt.Sprintf("111%s%03b%03b", compMap[i.Comp], i.destEncode(), i.decodeJump())
 }
 
 // destの部分をエンコードする
@@ -40,6 +40,16 @@ func (i Instruction) destEncode() uint8 {
 var compMap = map[string]string{
 	"D+A": "0000010",
 	"D&M": "1000000",
+	"D":   "0001100",
+}
+
+func (i Instruction) decodeJump() uint8 {
+	switch i.Jump {
+	case "JGT":
+		return 1
+	default:
+		return 0
+	}
 }
 
 // ProcessLine:
