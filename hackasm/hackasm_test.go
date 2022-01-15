@@ -192,7 +192,7 @@ D=A`,
 			},
 		},
 		{
-			name: "inline comment",
+			name: "handle inline comment",
 			src:  "// comment\n @2 // comment\nD=A",
 			want: []hackasm.Instruction{
 				{Kind: "A", Value: 2},
@@ -218,4 +218,43 @@ D=A`,
 			}
 		})
 	}
+}
+
+func TestAssemble(t *testing.T) {
+	testcases := []struct {
+		name string
+		src  string
+		want []string
+	}{
+		{
+			name: "2 lines",
+			src: `@2
+D=A`,
+			want: []string{
+				"0000000000000010",
+				"1110111000010000",
+			},
+		},
+	}
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			got := hackasm.Assemble(tt.src)
+			stringsMatch(t, tt.want, got)
+		})
+	}
+}
+
+func stringsMatch(t *testing.T, want, got []string) {
+	for i, w := range want {
+		if i >= len(got) {
+			t.Fatalf("length does not match: want %d, got %d", len(want), len(got))
+		}
+		if got[i] != w {
+			t.Errorf("want %q, but got %q at index %d", w, got[i], i)
+		}
+	}
+	if len(got) > len(want) {
+		t.Fatalf("length does not match: want %d, got %d", len(want), len(got))
+	}
+
 }

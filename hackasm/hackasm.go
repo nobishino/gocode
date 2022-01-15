@@ -169,3 +169,7 @@ func trimLine(line string) string {
 func shouldSkip(line string) bool {
 	return line == ""
 }
+
+func Assemble(src string) []string {
+	return nil
+}
