@@ -102,27 +102,35 @@ func (i Instruction) decodeJump() uint8 {
 func Parse(line string) Instruction {
 	switch {
 	case line[0] == '@':
-		return parseA(line)
+		return parseA(line[1:])
 	default:
 		return parseC(line)
 	}
 }
 
-func parseA(line string) Instruction {
-	value := line[1:]
-	v, err := strconv.ParseUint(value, 10, 15)
-	if err != nil {
-		if value[0] == 'R' {
-			v, err = strconv.ParseUint(value[1:], 10, 15)
-			if err != nil {
-				panic(err)
-			}
-		}
-	}
+// accept line = xxx in @xxx
+func parseA(aValue string) Instruction {
 	return Instruction{
 		Kind:  "A",
-		Value: uint16(v),
+		Value: uint16(calcAValue(aValue)),
 	}
+}
+
+var variableSymbolOffset = 16
+
+func calcAValue(aValue string) uint64 {
+	n, err := strconv.ParseUint(aValue, 10, 15)
+	if err == nil {
+		return n
+	}
+	if aValue[0] == 'R' {
+		n, err = strconv.ParseUint(aValue[1:], 10, 15)
+		if err != nil {
+			panic(err)
+		}
+		return n
+	}
+	panic("error in calcAValue")
 }
 
 func parseC(line string) Instruction {
