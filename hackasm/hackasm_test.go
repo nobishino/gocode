@@ -141,6 +141,16 @@ func TestInstructionCode(t *testing.T) {
 			},
 			want: "1110001100000111",
 		},
+		{
+			name: "AMD=1;JLE",
+			inst: hackasm.Instruction{
+				Kind: "C",
+				Comp: "1",
+				Dest: "AMD",
+				Jump: "JLE",
+			},
+			want: "1110111111111110",
+		},
 	}
 	for _, tt := range testcases {
 		if len(tt.want) != 16 {
