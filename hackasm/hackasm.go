@@ -43,10 +43,23 @@ var compMap = map[string]string{
 	"D":   "0001100",
 }
 
+// Jump部分を3bit整数にエンコードする
 func (i Instruction) decodeJump() uint8 {
 	switch i.Jump {
+	case "":
+		return 0b000
 	case "JGT":
 		return 0b001
+	case "JEQ":
+		return 0b010
+	case "JGE":
+		return 0b011
+	case "JLT":
+		return 0b100
+	case "JNE":
+		return 0b101
+	case "JLE":
+		return 0b110
 	case "JMP":
 		return 0b111
 	default:
