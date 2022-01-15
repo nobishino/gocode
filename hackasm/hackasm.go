@@ -46,7 +46,9 @@ var compMap = map[string]string{
 func (i Instruction) decodeJump() uint8 {
 	switch i.Jump {
 	case "JGT":
-		return 1
+		return 0b001
+	case "JMP":
+		return 0b111
 	default:
 		return 0
 	}
