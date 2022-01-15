@@ -224,24 +224,33 @@ D=A`,
 			},
 		},
 		{
-			name: "handle defined pointers and I/P pointers",
+			name: "handle variable symbol which starts with R",
 			src: `//
-@SP
-@LCL
-@ARG
-@THIS
-@SCREEN
-@KBD
+@RVariable
 `,
 			want: []hackasm.Instruction{
-				{Kind: "A", Value: 0},
-				{Kind: "A", Value: 1},
-				{Kind: "A", Value: 2},
-				{Kind: "A", Value: 3},
-				{Kind: "A", Value: 16384},
-				{Kind: "A", Value: 24576},
+				{Kind: "A", Value: 16},
 			},
 		},
+		// 		{
+		// 			name: "handle defined pointers and I/P pointers",
+		// 			src: `//
+		// @SP
+		// @LCL
+		// @ARG
+		// @THIS
+		// @SCREEN
+		// @KBD
+		// `,
+		// 			want: []hackasm.Instruction{
+		// 				{Kind: "A", Value: 0},
+		// 				{Kind: "A", Value: 1},
+		// 				{Kind: "A", Value: 2},
+		// 				{Kind: "A", Value: 3},
+		// 				{Kind: "A", Value: 16384},
+		// 				{Kind: "A", Value: 24576},
+		// 			},
+		// 		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
