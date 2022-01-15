@@ -167,3 +167,39 @@ func TestInstructionCode(t *testing.T) {
 		})
 	}
 }
+
+func TestParseLines(t *testing.T) {
+	testcases := []struct {
+		name string
+		src  string
+		want []hackasm.Instruction
+	}{
+		{
+			name: "2 lines",
+			src: `@2
+D=A`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 2},
+				{Kind: "C", Dest: "D", Comp: "A"},
+			},
+		},
+	}
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			gotInstructions := hackasm.ParseLines(tt.src)
+
+			for i, want := range tt.want {
+				if i >= len(gotInstructions) {
+					t.Fatalf("length does not match. want: %d, got %d", len(tt.want), len(gotInstructions))
+				}
+				got := gotInstructions[i]
+				if got != want {
+					t.Errorf("want %+v, but got %+v", want, got)
+				}
+			}
+			if len(gotInstructions) > len(tt.want) {
+				t.Fatalf("length does not match. want: %d, got %d", len(tt.want), len(gotInstructions))
+			}
+		})
+	}
+}

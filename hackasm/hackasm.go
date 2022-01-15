@@ -140,3 +140,15 @@ func parseC(line string) Instruction {
 
 	return result
 }
+
+type Instructions []Instruction
+
+// ParseLines はアセンブリソースコードsrcからInstruction
+func ParseLines(src string) Instructions {
+	lines := strings.Split(src, "\n")
+	var result Instructions
+	for _, line := range lines {
+		result = append(result, Parse(line))
+	}
+	return result
+}
