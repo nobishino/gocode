@@ -126,10 +126,9 @@ func calcAValue(aValue string) uint64 {
 	}
 	if aValue[0] == 'R' {
 		n, err = strconv.ParseUint(aValue[1:], 10, 15)
-		if err != nil {
-			panic(err)
+		if err == nil {
+			return n
 		}
-		return n
 	}
 	if _, ok := variableSymbols[aValue]; !ok {
 		variableSymbols[aValue] = variableSymbolOffset
