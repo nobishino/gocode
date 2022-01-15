@@ -148,13 +148,22 @@ func ParseLines(src string) Instructions {
 	lines := strings.Split(src, "\n")
 	var result Instructions
 	for _, line := range lines {
-		line = strings.Trim(line, " ")
+		line = trimLine(line)
 		if shouldSkip(line) {
 			continue
 		}
 		result = append(result, Parse(line))
 	}
 	return result
+}
+
+func trimLine(line string) string {
+	inlineCommentIdx := strings.Index(line, "//")
+	if inlineCommentIdx != -1 {
+		line = line[:inlineCommentIdx]
+	}
+	line = strings.Trim(line, " ")
+	return line
 }
 
 func shouldSkip(line string) bool {

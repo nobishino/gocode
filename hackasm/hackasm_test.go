@@ -191,6 +191,14 @@ D=A`,
 				{Kind: "C", Dest: "D", Comp: "A"},
 			},
 		},
+		{
+			name: "inline comment",
+			src:  "// comment\n @2 // comment\nD=A",
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 2},
+				{Kind: "C", Dest: "D", Comp: "A"},
+			},
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
