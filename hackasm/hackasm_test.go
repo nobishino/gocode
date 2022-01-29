@@ -235,6 +235,17 @@ D=A`,
 				{Kind: "A", Value: 17},
 			},
 		},
+		{
+			name: "handle tab(trimming)",
+			src: `//
+	@RVariable
+@RVariable2
+	`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 16},
+				{Kind: "A", Value: 17},
+			},
+		},
 		// 		{
 		// 			name: "handle defined pointers and I/P pointers",
 		// 			src: `//

@@ -96,6 +96,7 @@ func trimLine(line string) string {
 		line = line[:inlineCommentIdx]
 	}
 	line = strings.Trim(line, " ")
+	line = strings.Trim(line, "\t")
 	return line
 }
 
