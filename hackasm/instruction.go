@@ -13,6 +13,17 @@ type Instruction struct {
 	Jump  string
 }
 
+func (i Instruction) String() string {
+	switch i.Kind {
+	case "A":
+		return fmt.Sprintf("{%s: %d}", i.Kind, i.Value)
+	case "C":
+		return fmt.Sprintf("{%s: %s=%s;%s}", i.Kind, i.Dest, i.Comp, i.Jump)
+	default:
+		panic("")
+	}
+}
+
 func (i Instruction) Code() string {
 	if i.Kind == "A" {
 		return fmt.Sprintf("0%015b", i.Value)

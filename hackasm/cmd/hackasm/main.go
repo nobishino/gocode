@@ -10,16 +10,15 @@ import (
 	"github.com/nobishino/gocode/hackasm"
 )
 
-var outPath string
 var srcPath string
+var outPath string
 
 func init() {
-	flag.StringVar(&outPath, "o", "out.hack", "specify output file name")
-	flag.StringVar(&srcPath, "src", "", "specify output file name")
-	flag.Parse()
+	flag.StringVar(&srcPath, "src", "", "specify input file name")
+	flag.StringVar(&outPath, "out", "out.hack", "specify output file name")
 }
 
-func main() {
+func exec(srcPath, outPath string) {
 	f, err := os.Open(srcPath)
 	if err != nil {
 		log.Fatal(err)
@@ -32,8 +31,6 @@ func main() {
 	}
 
 	lines := hackasm.Assemble(string(b))
-	log.Println(string(b))
-	log.Println(lines)
 
 	out, err := os.Create(outPath)
 	if err != nil {
@@ -42,11 +39,15 @@ func main() {
 	defer out.Close()
 
 	for _, line := range lines {
-		log.Println(line)
 		_, err := fmt.Fprintln(out, line)
 		if err != nil {
 			log.Fatalln(err)
 		}
 	}
 	log.Println("assembled into", outPath)
+}
+
+func main() {
+	flag.Parse()
+	exec(srcPath, outPath)
 }

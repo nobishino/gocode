@@ -113,6 +113,7 @@ func trimLine(line string) string {
 	}
 	line = strings.Trim(line, " ")
 	line = strings.Trim(line, "\t")
+	line = strings.Trim(line, "\r")
 	return line
 }
 

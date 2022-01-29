@@ -1,6 +1,7 @@
 package hackasm_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/nobishino/gocode/hackasm"
@@ -331,22 +332,17 @@ D=A`,
 			},
 		},
 		{
-			name: "Add.asm",
-			src: `//
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/06/add/Add.asm
-
-// Computes R0 = 2 + 3  (R0 refers to RAM[0])
-
-@2
-D=A
-@3
-D=D+A
-@0
-M=D
-	`,
+			name: "Add.asm with carriage return",
+			src: strings.Join(
+				[]string{
+					"@2",
+					"D=A",
+					"@3",
+					"D=D+A",
+					"@0",
+					"M=D",
+				}, "\r\n",
+			),
 			want: []string{
 				"0000000000000010",
 				"1110110000010000",
