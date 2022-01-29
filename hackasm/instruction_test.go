@@ -34,31 +34,8 @@ func TestInstructionCode(t *testing.T) {
 		{C("D", "D&M", ""), "1111000000010000"},
 		{C("", "D", "JGT"), "1110001100000001"},
 		{C("", "D", "JMP"), "1110001100000111"},
-		{
-			inst: hackasm.Instruction{
-				Kind: "C",
-				Comp: "D",
-				Jump: "JMP",
-			},
-			want: "1110001100000111",
-		},
-		{
-			inst: hackasm.Instruction{
-				Kind: "C",
-				Comp: "1",
-				Dest: "AMD",
-				Jump: "JLE",
-			},
-			want: "1110111111111110",
-		},
-		{
-			inst: hackasm.Instruction{
-				Kind: "C",
-				Comp: "M-1",
-				Dest: "AM",
-			},
-			want: "1111110010101000",
-		},
+		{C("AMD", "1", "JLE"), "1110111111111110"},
+		{C("AM", "M-1", ""), "1111110010101000"},
 	}
 	for _, tt := range testcases {
 		if len(tt.want) != 16 {
