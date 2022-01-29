@@ -97,17 +97,3 @@ func (i Instruction) decodeJump() uint8 {
 }
 
 type Instructions []Instruction
-
-// ParseLines はアセンブリソースコードsrcからInstruction
-func ParseLines(src string) Instructions {
-	lines := strings.Split(src, "\n")
-	var result Instructions
-	for _, line := range lines {
-		line = trimLine(line)
-		if shouldSkip(line) {
-			continue
-		}
-		result = append(result, Parse(line))
-	}
-	return result
-}

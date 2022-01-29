@@ -5,29 +5,45 @@ import (
 	"strings"
 )
 
-// ProcessLine:
-
-func Parse(line string) Instruction {
-	switch {
-	case line[0] == '@':
-		return parseA(line[1:])
-	default:
-		return parseC(line)
-	}
-}
-
-// accept line = xxx in @xxx
-func parseA(aValue string) Instruction {
-	return Instruction{
-		Kind:  "A",
-		Value: uint16(calcAValue(aValue)),
-	}
-}
+type Parser struct{}
 
 var variableSymbolOffset uint64 = 16
 var variableSymbols = map[string]uint64{}
 
-func calcAValue(aValue string) uint64 {
+// ProcessLine:
+
+func (p *Parser) Parse(line string) Instruction {
+	switch {
+	case line[0] == '@':
+		return p.parseA(line[1:])
+	default:
+		return p.parseC(line)
+	}
+}
+
+// ParseLines はアセンブリソースコードsrcからInstruction
+func (p *Parser) ParseLines(src string) Instructions {
+	lines := strings.Split(src, "\n")
+	var result Instructions
+	for _, line := range lines {
+		line = trimLine(line)
+		if shouldSkip(line) {
+			continue
+		}
+		result = append(result, p.Parse(line))
+	}
+	return result
+}
+
+// accept line = xxx in @xxx
+func (p *Parser) parseA(aValue string) Instruction {
+	return Instruction{
+		Kind:  "A",
+		Value: uint16(p.calcAValue(aValue)),
+	}
+}
+
+func (p *Parser) calcAValue(aValue string) uint64 {
 	n, err := strconv.ParseUint(aValue, 10, 15)
 	if err == nil {
 		return n
@@ -45,7 +61,7 @@ func calcAValue(aValue string) uint64 {
 	return variableSymbols[aValue]
 }
 
-func parseC(line string) Instruction {
+func (p *Parser) parseC(line string) Instruction {
 	result := Instruction{
 		Kind: "C",
 	}
