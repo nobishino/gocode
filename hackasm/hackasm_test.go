@@ -176,7 +176,8 @@ func TestParseLines(t *testing.T) {
 	}{
 		{
 			name: "2 lines",
-			src: `@2
+			src: `
+@2
 D=A`,
 			want: []hackasm.Instruction{
 				{Kind: "A", Value: 2},
