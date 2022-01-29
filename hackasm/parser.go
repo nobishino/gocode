@@ -55,11 +55,27 @@ func (p *Parser) calcAValue(aValue string) uint64 {
 	if err == nil {
 		return n
 	}
-	if aValue[0] == 'R' {
-		n, err = strconv.ParseUint(aValue[1:], 10, 15)
+	if aValue[0] == 'R' { // case R0, R1, R2, ... R15
+		n, err = strconv.ParseUint(aValue[1:], 10, 15) // n = 0, 1, 2, ... 15
 		if err == nil {
 			return n
 		}
+	}
+	switch aValue {
+	case "SP":
+		return 0
+	case "LCL":
+		return 1
+	case "ARG":
+		return 2
+	case "THIS":
+		return 3
+	case "THAT":
+		return 4
+	case "SCREEN":
+		return 16384
+	case "KBD":
+		return 24576
 	}
 	if _, ok := p.variableSymbols[aValue]; !ok {
 		p.variableSymbols[aValue] = p.variableSymbolOffset

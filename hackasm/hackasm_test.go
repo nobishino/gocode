@@ -246,6 +246,27 @@ D=A`,
 				{Kind: "A", Value: 17},
 			},
 		},
+		{
+			name: "handle defined symbol",
+			src: `//
+	@SP
+@LCL
+@ARG
+@THIS
+@THAT
+@SCREEN
+@KBD
+	`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 0},
+				{Kind: "A", Value: 1},
+				{Kind: "A", Value: 2},
+				{Kind: "A", Value: 3},
+				{Kind: "A", Value: 4},
+				{Kind: "A", Value: 16384},
+				{Kind: "A", Value: 24576},
+			},
+		},
 		// 		{
 		// 			name: "handle defined pointers and I/P pointers",
 		// 			src: `//
