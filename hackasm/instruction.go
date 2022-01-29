@@ -16,11 +16,19 @@ type Instruction struct {
 func (i Instruction) String() string {
 	switch i.Kind {
 	case "A":
-		return fmt.Sprintf("{%s: %d}", i.Kind, i.Value)
+		return fmt.Sprintf("[A]@%d", i.Value)
 	case "C":
-		return fmt.Sprintf("{%s: %s=%s;%s}", i.Kind, i.Dest, i.Comp, i.Jump)
+		result := i.Comp
+		if i.Dest != "" {
+			result = i.Dest + "=" + result
+		}
+		if i.Jump != "" {
+			result += ";" + i.Jump
+		}
+		return "[C]" + result
 	default:
-		panic("")
+		return fmt.Sprintf("Invalid value: {Kind: %s, Value: %d, Dest: %s, Comp: %s, Jump: %s}",
+			i.Kind, i.Value, i.Dest, i.Comp, i.Jump)
 	}
 }
 
