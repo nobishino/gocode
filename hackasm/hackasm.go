@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Assemble(src string) []string {
+func assembleString(src string) []string {
 	var result []string
 
 	p := NewParser()
@@ -17,13 +17,13 @@ func Assemble(src string) []string {
 	return result
 }
 
-func AssembleRW(r io.Reader, w io.Writer) error {
+func Assemble(r io.Reader, w io.Writer) error {
 	buf := new(strings.Builder)
 	if _, err := io.Copy(buf, r); err != nil {
 		return err
 	}
 
-	lines := Assemble(buf.String())
+	lines := assembleString(buf.String())
 	for _, line := range lines {
 		_, err := fmt.Fprintln(w, line)
 		if err != nil {

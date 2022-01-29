@@ -364,66 +364,6 @@ M=D
 }
 
 func TestAssemble(t *testing.T) {
-	testcases := []struct {
-		name string
-		src  string
-		want []string
-	}{
-		{
-			name: "2 lines",
-			src: `@2
-D=A`,
-			want: []string{
-				"0000000000000010",
-				"1110110000010000",
-			},
-		},
-		{
-			name: "Add.asm with carriage return",
-			src: strings.Join(
-				[]string{
-					"@2",
-					"D=A",
-					"@3",
-					"D=D+A",
-					"@0",
-					"M=D",
-				}, "\r\n",
-			),
-			want: []string{
-				"0000000000000010",
-				"1110110000010000",
-				"0000000000000011",
-				"1110000010010000",
-				"0000000000000000",
-				"1110001100001000",
-			},
-		},
-	}
-	for _, tt := range testcases {
-		t.Run(tt.name, func(t *testing.T) {
-			got := hackasm.Assemble(tt.src)
-			stringsMatch(t, tt.want, got)
-		})
-	}
-}
-
-func stringsMatch(t *testing.T, want, got []string) {
-	for i, w := range want {
-		if i >= len(got) {
-			t.Fatalf("length does not match: want %d, got %d", len(want), len(got))
-		}
-		if got[i] != w {
-			t.Errorf("want %q, but got %q at index %d", w, got[i], i)
-		}
-	}
-	if len(got) > len(want) {
-		t.Fatalf("length does not match: want %d, got %d", len(want), len(got))
-	}
-
-}
-
-func TestAssembleRW(t *testing.T) {
 	testcase := []struct {
 		name string
 	}{
@@ -435,7 +375,7 @@ func TestAssembleRW(t *testing.T) {
 			src := open(t, filepath.Join("testdata", tt.name+".asm"))
 			dest := new(bytes.Buffer)
 
-			if err := hackasm.AssembleRW(src, dest); err != nil {
+			if err := hackasm.Assemble(src, dest); err != nil {
 				t.Fatal(err)
 			}
 
@@ -448,17 +388,6 @@ func TestAssembleRW(t *testing.T) {
 
 func open(t *testing.T, path string) *os.File {
 	f, err := os.Open(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		f.Close()
-	})
-	return f
-}
-
-func create(t *testing.T, path string) *os.File {
-	f, err := os.Create(path)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -27,7 +27,7 @@ func exec(srcPath, outPath string) {
 	}
 	defer out.Close()
 
-	if err := hackasm.AssembleRW(f, out); err != nil {
+	if err := hackasm.Assemble(f, out); err != nil {
 		log.Fatalln(err)
 	}
 
