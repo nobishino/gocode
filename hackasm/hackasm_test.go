@@ -1,6 +1,10 @@
 package hackasm_test
 
 import (
+	"bytes"
+	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -417,4 +421,63 @@ func stringsMatch(t *testing.T, want, got []string) {
 		t.Fatalf("length does not match: want %d, got %d", len(want), len(got))
 	}
 
+}
+
+func TestAssembleRW(t *testing.T) {
+	testcase := []struct {
+		name string
+	}{
+		{"PongL"},
+	}
+	for _, tt := range testcase {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			src := open(t, filepath.Join("testdata", tt.name+".asm"))
+			dest := new(bytes.Buffer)
+
+			if err := hackasm.AssembleRW(src, dest); err != nil {
+				t.Fatal(err)
+			}
+
+			expect := open(t, filepath.Join("testdata", tt.name+".hack"))
+
+			equal(t, expect, dest)
+		})
+	}
+}
+
+func open(t *testing.T, path string) *os.File {
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		f.Close()
+	})
+	return f
+}
+
+func create(t *testing.T, path string) *os.File {
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		f.Close()
+	})
+	return f
+}
+
+func equal(t *testing.T, want, got io.Reader) {
+	wantB := new(strings.Builder)
+	gotB := new(strings.Builder)
+	if _, err := io.Copy(wantB, want); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := io.Copy(gotB, got); err != nil {
+		t.Fatal(err)
+	}
+	if wantB.String() != gotB.String() {
+		t.Errorf("does not match. want:%s, got:%s", wantB.String(), gotB.String())
+	}
 }
