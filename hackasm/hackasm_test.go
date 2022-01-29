@@ -228,10 +228,11 @@ D=A`,
 		{
 			name: "handle variable symbol which starts with R",
 			src: `//
-		@RVariable
-		`,
+@RVariable
+@RVariable2`,
 			want: []hackasm.Instruction{
 				{Kind: "A", Value: 16},
+				{Kind: "A", Value: 17},
 			},
 		},
 		// 		{
