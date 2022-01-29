@@ -5,10 +5,17 @@ import (
 	"strings"
 )
 
-type Parser struct{}
+type Parser struct {
+	variableSymbolOffset uint64            // u = unsigned(符号なし整数) // 0
+	variableSymbols      map[string]uint64 // nil
+}
 
-var variableSymbolOffset uint64 = 16
-var variableSymbols = map[string]uint64{}
+func NewParser() *Parser {
+	return &Parser{
+		variableSymbolOffset: 16,
+		variableSymbols:      map[string]uint64{},
+	}
+}
 
 // ProcessLine:
 
@@ -54,11 +61,11 @@ func (p *Parser) calcAValue(aValue string) uint64 {
 			return n
 		}
 	}
-	if _, ok := variableSymbols[aValue]; !ok {
-		variableSymbols[aValue] = variableSymbolOffset
-		variableSymbolOffset++
+	if _, ok := p.variableSymbols[aValue]; !ok {
+		p.variableSymbols[aValue] = p.variableSymbolOffset
+		p.variableSymbolOffset++
 	}
-	return variableSymbols[aValue]
+	return p.variableSymbols[aValue]
 }
 
 func (p *Parser) parseC(line string) Instruction {

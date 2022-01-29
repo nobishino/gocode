@@ -67,7 +67,7 @@ func TestParser(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
-			p := new(hackasm.Parser)
+			p := hackasm.NewParser()
 			got := p.Parse(tt.in)
 			if got != tt.want {
 				t.Errorf("want %v, but got %v", tt.want, got)
@@ -225,15 +225,15 @@ D=A`,
 				{Kind: "A", Value: 17},
 			},
 		},
-		// {
-		// 	name: "handle variable symbol which starts with R",
-		// 	src: `//
-		// @RVariable
-		// `,
-		// 	want: []hackasm.Instruction{
-		// 		{Kind: "A", Value: 16},
-		// 	},
-		// },
+		{
+			name: "handle variable symbol which starts with R",
+			src: `//
+		@RVariable
+		`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 16},
+			},
+		},
 		// 		{
 		// 			name: "handle defined pointers and I/P pointers",
 		// 			src: `//
@@ -256,7 +256,7 @@ D=A`,
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
-			p := new(hackasm.Parser)
+			p := hackasm.NewParser()
 			gotInstructions := p.ParseLines(tt.src)
 
 			for i, want := range tt.want {
