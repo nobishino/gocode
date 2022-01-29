@@ -273,6 +273,24 @@ D=A`,
 			},
 		},
 		{
+			name: "handle label symbols",
+			src: `//
+@R0
+@R1
+(START)
+M=A
+@START
+;JMP
+	`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 0},
+				{Kind: "A", Value: 1},
+				{Kind: "C", Comp: "M=A"},
+				{Kind: "A", Value: 2},
+				{Kind: "C", Jump: "JMP"},
+			},
+		},
+		{
 			name: "handle defined symbol",
 			src: `//
 	@SP
