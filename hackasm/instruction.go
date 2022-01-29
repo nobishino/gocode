@@ -25,10 +25,13 @@ func (i Instruction) String() string {
 }
 
 func (i Instruction) Code() string {
-	if i.Kind == "A" {
-		return fmt.Sprintf("0%015b", i.Value)
-	}
-	return fmt.Sprintf("111%s%03b%03b", compMap[i.Comp], i.destEncode(), i.decodeJump())
+	result := func() string {
+		if i.Kind == "A" {
+			return fmt.Sprintf("0%015b", i.Value)
+		}
+		return fmt.Sprintf("111%s%03b%03b", compMap[i.Comp], i.destEncode(), i.decodeJump())
+	}()
+	return result
 }
 
 // destの部分をエンコードする
