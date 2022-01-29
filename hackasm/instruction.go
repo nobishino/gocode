@@ -29,7 +29,11 @@ func (i Instruction) Code() string {
 		if i.Kind == "A" {
 			return fmt.Sprintf("0%015b", i.Value)
 		}
-		return fmt.Sprintf("111%s%03b%03b", compMap[i.Comp], i.destEncode(), i.decodeJump())
+		comp, ok := compMap[i.Comp]
+		if !ok {
+			panic(fmt.Sprintf("Instruction.Code() failes because compMap is not defined for %s", i.Comp))
+		}
+		return fmt.Sprintf("111%s%03b%03b", comp, i.destEncode(), i.decodeJump())
 	}()
 	return result
 }
