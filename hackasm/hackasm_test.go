@@ -267,25 +267,32 @@ D=A`,
 				{Kind: "A", Value: 24576},
 			},
 		},
-		// 		{
-		// 			name: "handle defined pointers and I/P pointers",
-		// 			src: `//
-		// @SP
-		// @LCL
-		// @ARG
-		// @THIS
-		// @SCREEN
-		// @KBD
-		// `,
-		// 			want: []hackasm.Instruction{
-		// 				{Kind: "A", Value: 0},
-		// 				{Kind: "A", Value: 1},
-		// 				{Kind: "A", Value: 2},
-		// 				{Kind: "A", Value: 3},
-		// 				{Kind: "A", Value: 16384},
-		// 				{Kind: "A", Value: 24576},
-		// 			},
-		// 		},
+		{
+			name: "handle Add.asm",
+			src: `//
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/06/add/Add.asm
+
+// Computes R0 = 2 + 3  (R0 refers to RAM[0])
+
+@2
+D=A
+@3
+D=D+A
+@0
+M=D
+	`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 2},
+				{Kind: "C", Dest: "D", Comp: "A"},
+				{Kind: "A", Value: 3},
+				{Kind: "C", Dest: "D", Comp: "D+A"},
+				{Kind: "A", Value: 0},
+				{Kind: "C", Dest: "M", Comp: "D"},
+			},
+		},
 	}
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
