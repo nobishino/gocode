@@ -108,6 +108,22 @@ func TestInstructionCode(t *testing.T) {
 			want: "1110000010000000",
 		},
 		{
+			name: "D-1",
+			inst: hackasm.Instruction{
+				Kind: "C",
+				Comp: "D-1",
+			},
+			want: "1110001110000000",
+		},
+		{
+			name: "A-1",
+			inst: hackasm.Instruction{
+				Kind: "C",
+				Comp: "A-1",
+			},
+			want: "1110110010000000",
+		},
+		{
 			name: "ADM=D&M",
 			inst: hackasm.Instruction{
 				Kind: "C",
