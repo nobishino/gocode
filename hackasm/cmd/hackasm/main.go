@@ -32,6 +32,8 @@ func main() {
 	}
 
 	lines := hackasm.Assemble(string(b))
+	log.Println(string(b))
+	log.Println(lines)
 
 	out, err := os.Create(outPath)
 	if err != nil {
@@ -40,6 +42,7 @@ func main() {
 	defer out.Close()
 
 	for _, line := range lines {
+		log.Println(line)
 		_, err := fmt.Fprintln(out, line)
 		if err != nil {
 			log.Fatalln(err)
