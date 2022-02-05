@@ -32,8 +32,43 @@ func (p *Parser) Parse(line string) Instruction {
 func (p *Parser) ParseLines(src string) Instructions {
 	var result Instructions
 	lines := p.selectEffectiveLines(src)
+	p.handleLabelSymbols(lines)
+	lines = filterOutLabels(lines)
 	for _, line := range lines {
 		result = append(result, p.Parse(line))
+	}
+	return result
+}
+
+func (p *Parser) handleLabelSymbols(lines []string) {
+	// linesについてループ
+	// labelシンボルが出てきたらその次の行の位置をlabel symbolの値として記録する
+	var pos uint64
+	for _, line := range lines {
+		if label, ok := parseLabel(line); ok {
+			p.variableSymbols[label] = pos
+			continue
+		}
+		pos++
+	}
+}
+
+// "(LABEL)" -> "LABEL", true
+// "@LABEL" -> "", false
+func parseLabel(line string) (string, bool) {
+	if !strings.HasPrefix(line, "(") || !strings.HasSuffix(line, ")") {
+		return "", false
+	}
+	return line[1 : len(line)-1], true
+}
+
+func filterOutLabels(lines []string) []string {
+	result := make([]string, 0, len(lines))
+	for _, line := range lines {
+		if _, ok := parseLabel(line); ok {
+			continue
+		}
+		result = append(result, line)
 	}
 	return result
 }

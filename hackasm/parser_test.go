@@ -146,24 +146,24 @@ D=A`,
 				{Kind: "A", Value: 17},
 			},
 		},
-		// {
-		// 	name: "handle label symbols",
-		// 	src: `//
-		// @R0
-		// @R1
-		// (START)
-		// M=A
-		// @START
-		// ;JMP
-		// 	`,
-		// 	want: []hackasm.Instruction{
-		// 		{Kind: "A", Value: 0},
-		// 		{Kind: "A", Value: 1},
-		// 		{Kind: "C", Comp: "M=A"},
-		// 		{Kind: "A", Value: 2},
-		// 		{Kind: "C", Jump: "JMP"},
-		// 	},
-		// },
+		{
+			name: "handle label symbols",
+			src: `//
+		@R0
+		@R1
+		(START)
+		M=A
+		@START
+		;JMP
+			`,
+			want: []hackasm.Instruction{
+				{Kind: "A", Value: 0},
+				{Kind: "A", Value: 1},
+				{Kind: "C", Dest: "M", Comp: "A"},
+				{Kind: "A", Value: 2},
+				{Kind: "C", Jump: "JMP"},
+			},
+		},
 		{
 			name: "handle defined symbol",
 			src: `//
