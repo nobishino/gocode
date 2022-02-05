@@ -46,10 +46,12 @@ func (p *Parser) handleLabelSymbols(lines []string) {
 	var pos uint64
 	for _, line := range lines {
 		if label, ok := parseLabel(line); ok {
+			// labelの場合
 			p.variableSymbols[label] = pos
-			continue
+		} else {
+			// 命令の場合
+			pos++
 		}
-		pos++
 	}
 }
 
