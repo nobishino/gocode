@@ -16,6 +16,7 @@ func TestAssemble(t *testing.T) {
 		name string
 	}{
 		{"PongL"},
+		{"Max"},
 	}
 	for _, tt := range testcase {
 		tt := tt

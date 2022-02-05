@@ -30,14 +30,60 @@ func (p *Parser) Parse(line string) Instruction {
 
 // ParseLines はアセンブリソースコードsrcからInstruction
 func (p *Parser) ParseLines(src string) Instructions {
-	lines := strings.Split(src, "\n")
 	var result Instructions
+	lines := p.selectEffectiveLines(src)
+	p.handleLabelSymbols(lines)
+	lines = filterOutLabels(lines)
 	for _, line := range lines {
-		line = trimLine(line)
-		if shouldSkip(line) {
+		result = append(result, p.Parse(line))
+	}
+	return result
+}
+
+func (p *Parser) handleLabelSymbols(lines []string) {
+	// linesについてループ
+	// labelシンボルが出てきたらその次の行の位置をlabel symbolの値として記録する
+	var pos uint64
+	for _, line := range lines {
+		if label, ok := parseLabel(line); ok {
+			// labelの場合
+			p.variableSymbols[label] = pos
+		} else {
+			// 命令の場合
+			pos++
+		}
+	}
+}
+
+// "(LABEL)" -> "LABEL", true
+// "@LABEL" -> "", false
+func parseLabel(line string) (string, bool) {
+	if !strings.HasPrefix(line, "(") || !strings.HasSuffix(line, ")") {
+		return "", false
+	}
+	return line[1 : len(line)-1], true
+}
+
+func filterOutLabels(lines []string) []string {
+	result := make([]string, 0, len(lines))
+	for _, line := range lines {
+		if _, ok := parseLabel(line); ok {
 			continue
 		}
-		result = append(result, p.Parse(line))
+		result = append(result, line)
+	}
+	return result
+}
+
+func (p *Parser) selectEffectiveLines(src string) []string {
+	lines := strings.Split(src, "\n")
+	var result []string
+	for _, line := range lines {
+		trimeed := trimLine(line)
+		if shouldSkip(trimeed) {
+			continue
+		}
+		result = append(result, trimeed)
 	}
 	return result
 }
@@ -111,10 +157,7 @@ func trimLine(line string) string {
 	if inlineCommentIdx != -1 {
 		line = line[:inlineCommentIdx]
 	}
-	line = strings.Trim(line, " ")
-	line = strings.Trim(line, "\t")
-	line = strings.Trim(line, "\r")
-	return line
+	return strings.Trim(line, " \t\r")
 }
 
 func shouldSkip(line string) bool {
