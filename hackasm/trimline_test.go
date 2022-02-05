@@ -13,7 +13,7 @@ func TestExportTrimLine(t *testing.T) {
 	}{
 		{" @R0 ", "@R0"},
 		{"@R0  ", "@R0"},
-		{"   @R0             ", "@R0"},
+		{"   @R0             \r", "@R0"},
 	}
 	for _, tt := range testcases {
 		tt := tt

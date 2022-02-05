@@ -79,11 +79,11 @@ func (p *Parser) selectEffectiveLines(src string) []string {
 	lines := strings.Split(src, "\n")
 	var result []string
 	for _, line := range lines {
-		line = trimLine(line)
-		if shouldSkip(line) {
+		trimeed := trimLine(line)
+		if shouldSkip(trimeed) {
 			continue
 		}
-		result = append(result, line)
+		result = append(result, trimeed)
 	}
 	return result
 }
@@ -157,10 +157,7 @@ func trimLine(line string) string {
 	if inlineCommentIdx != -1 {
 		line = line[:inlineCommentIdx]
 	}
-	line = strings.Trim(line, " ")
-	line = strings.Trim(line, "\t")
-	line = strings.Trim(line, "\r")
-	return line
+	return strings.Trim(line, " \t\r")
 }
 
 func shouldSkip(line string) bool {
