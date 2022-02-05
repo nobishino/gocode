@@ -30,14 +30,23 @@ func (p *Parser) Parse(line string) Instruction {
 
 // ParseLines はアセンブリソースコードsrcからInstruction
 func (p *Parser) ParseLines(src string) Instructions {
-	lines := strings.Split(src, "\n")
 	var result Instructions
+	lines := p.selectEffectiveLines(src)
+	for _, line := range lines {
+		result = append(result, p.Parse(line))
+	}
+	return result
+}
+
+func (p *Parser) selectEffectiveLines(src string) []string {
+	lines := strings.Split(src, "\n")
+	var result []string
 	for _, line := range lines {
 		line = trimLine(line)
 		if shouldSkip(line) {
 			continue
 		}
-		result = append(result, p.Parse(line))
+		result = append(result, line)
 	}
 	return result
 }
