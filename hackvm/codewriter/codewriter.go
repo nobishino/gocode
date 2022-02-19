@@ -1,6 +1,9 @@
 package codewriter
 
-import "io"
+import (
+	"fmt"
+	"io"
+)
 
 type CodeWriter struct {
 	out io.Writer
@@ -25,8 +28,8 @@ func (c *CodeWriter) WriteArithmetic(command string) error {
 
 //C_PUSHまたはC_POPコマンドをアッセンブリーに変換しそれを書き込む
 func (c *CodeWriter) WritePushPop(command string, segment string, index int) error {
-	tmp := `// push constant 7
-@7
+	format := `// push constant %[1]d
+@%[1]d
 D=A
 @SP
 A=M
@@ -34,7 +37,8 @@ M=D
 @SP
 M=M+1
 `
-	_, err := io.WriteString(c.out, tmp)
+	code := fmt.Sprintf(format, index)
+	_, err := io.WriteString(c.out, code)
 	if err != nil {
 		return err
 	}
