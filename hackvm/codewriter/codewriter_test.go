@@ -42,3 +42,40 @@ M=M+1
 		}
 	}
 }
+
+func TestWriteArithmetic(t *testing.T) {
+	testcases := []struct {
+		command string
+		want    string
+	}{
+		{
+			command: "add",
+			want: `// add
+@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+M=D+M
+@SP
+M=M+1
+`,
+		},
+	}
+	for _, c := range testcases {
+		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
+		writer := codewriter.New(&buf)
+
+		err := writer.WriteArithmetic(c.command)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := buf.String() // 結果を取り出す
+		if got != c.want {
+			t.Errorf("want: \n%s\nbut got:\n%s\n", c.want, got)
+		}
+	}
+}
