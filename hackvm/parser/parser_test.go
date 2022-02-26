@@ -27,7 +27,9 @@ func TestParser_Arithmetic(t *testing.T) {
 				t.Fatalf("there should be %d commands, but got only %d commands",
 					len(tc.arg), idx)
 			}
-			p.Advance()
+			if err := p.Advance(); err != nil {
+				t.Fatal(err)
+			}
 			gotType := p.CommandType()
 			if gotType != wantType {
 				t.Errorf("want %q, but got %q", wantType, gotType)
@@ -64,7 +66,9 @@ func TestParser_MemoryAccess(t *testing.T) {
 				t.Fatalf("there should be %d commands, but got only %d commands",
 					len(tc.arg), idx)
 			}
-			p.Advance()
+			if err := p.Advance(); err != nil {
+				t.Fatal(err)
+			}
 			gotType := p.CommandType()
 			wantCmdType := tc.cmdType[idx]
 			if gotType != wantCmdType {

@@ -4,6 +4,24 @@ import (
 	"io"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
+)
+
+const (
+	add           = "add"
+	sub           = "sub"
+	neg           = "neg"
+	eq            = "eq"
+	gt            = "gt"
+	lt            = "lt"
+	and           = "and"
+	or            = "or"
+	not           = "not"
+	push          = "push"
+	pop           = "pop"
+	cmdPush       = "C_PUSH"
+	cmdArithmetic = "C_ARITHMETIC"
 )
 
 type Parser struct {
@@ -41,25 +59,34 @@ func (p *Parser) HasMoreCommands() bool {
 // 入力から次のコマンドを読み、それを現コマンドとする。
 // HasMoreCommandsがtrueを返したときだけAdvanceを呼ぶべき。
 // 最初は現コマンドは空になる
-func (p *Parser) Advance() {
+func (p *Parser) Advance() error {
 	p.current++
+	if err := validate(p.cmds[p.current]); err != nil {
+		return errors.WithMessagef(err, "invalid command at %d th line", p.current)
+	}
+	return nil
 }
 
-const (
-	add           = "add"
-	sub           = "sub"
-	neg           = "neg"
-	eq            = "eq"
-	gt            = "gt"
-	lt            = "lt"
-	and           = "and"
-	or            = "or"
-	not           = "not"
-	push          = "push"
-	pop           = "pop"
-	cmdPush       = "C_PUSH"
-	cmdArithmetic = "C_ARITHMETIC"
-)
+func validate(cmd []string) error {
+	if len(cmd) < 2 {
+		return errors.Errorf("command should have at least 2 words, but got %d", len(cmd))
+	}
+	switch cmd[1] {
+	case cmdPush:
+		if len(cmd) != 3 {
+			return errors.Errorf("push command should have exactly 3 words, but got %d", len(cmd))
+		}
+		_, err := strconv.Atoi(cmd[2])
+		if err != nil {
+			return errors.Wrap(err, "failed to parse 2nd argument of push/pop command")
+		}
+	case add, sub, neg, eq, gt, lt, and, or, not:
+		if len(cmd) != 1 {
+			return errors.Errorf("push command should have exactly 1 word, but got %d", len(cmd))
+		}
+	}
+	return nil
+}
 
 // 現コマンドの種類を返す。算術コマンドはすべてC_ARITHMETICが返される
 func (p *Parser) CommandType() string {

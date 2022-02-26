@@ -56,7 +56,9 @@ func Translate(w io.Writer, r io.Reader) error {
 	p := parser.New(r)
 	cw := codewriter.New(w)
 	for p.HasMoreCommands() {
-		p.Advance()
+		if err := p.Advance(); err != nil {
+			return err
+		}
 		switch p.CommandType() {
 		case "C_ARITHMETIC":
 			if err := cw.WriteArithmetic(p.Arg1()); err != nil {
