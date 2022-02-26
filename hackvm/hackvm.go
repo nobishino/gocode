@@ -3,6 +3,7 @@ package hackvm
 import (
 	"errors"
 	"flag"
+	"io"
 	"log"
 	"os"
 
@@ -30,13 +31,13 @@ func exec() error {
 	if len(args) < 1 {
 		return errors.New("need at least 1 argument")
 	}
+
 	srcPath := args[0] // TODO handle multiple source files
-	f, err := os.Open(srcPath)
+	src, err := os.Open(srcPath)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	p := parser.New(f)
+	defer src.Close()
 
 	out, err := os.Create(outFile)
 	if err != nil {
@@ -44,7 +45,16 @@ func exec() error {
 	}
 	defer out.Close()
 
-	cw := codewriter.New(out)
+	if err := Translate(out, src); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Translate(w io.Writer, r io.Reader) error {
+	p := parser.New(r)
+	cw := codewriter.New(w)
 	for p.HasMoreCommands() {
 		p.Advance()
 		switch p.CommandType() {
