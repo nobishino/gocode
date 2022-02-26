@@ -50,10 +50,12 @@ func TestParser_MemoryAccess(t *testing.T) {
 	}
 	testcases := []struct {
 		in      string
-		cmdType string
+		cmdType []string
 		arg     []args
 	}{
-		{"push constant 7", "C_PUSH", []args{{"constant", 7}}},
+		{"push constant 7", []string{"C_PUSH"}, []args{{"constant", 7}}},
+		{"push constant 8", []string{"C_PUSH"}, []args{{"constant", 8}}},
+		{"push constant 7\npush constant 8", []string{"C_PUSH", "C_PUSH"}, []args{{"constant", 7}, {"constant", 8}}},
 	}
 	for _, tc := range testcases {
 		p := parser.New(strings.NewReader(tc.in))
@@ -64,8 +66,9 @@ func TestParser_MemoryAccess(t *testing.T) {
 			}
 			p.Advance()
 			gotType := p.CommandType()
-			if gotType != tc.cmdType {
-				t.Errorf("want %q, but got %q", tc.cmdType, gotType)
+			wantCmdType := tc.cmdType[idx]
+			if gotType != wantCmdType {
+				t.Errorf("want %q, but got %q", wantCmdType, gotType)
 			}
 			gotArg1 := p.Arg1()
 			wantArg1 := tc.arg[idx].arg1
