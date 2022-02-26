@@ -23,13 +23,13 @@ func (p *Parser) Advance() {
 
 // 現コマンドの種類を返す。算術コマンドはすべてC_ARITHMETICが返される
 func (p *Parser) CommandType() string {
-	return ""
+	return "C_ARITHMETIC"
 }
 
 // 現コマンドの最初の引数を返す。　C_ARITHMETICの場合、コマンド自体(add,subなど)が返される。
 // 現コマンドがC_RETURNの場合、本メソッドは呼ばないようにする
 func (p *Parser) Arg1() string {
-	return ""
+	return "add"
 }
 
 // 現コマンドの2番目の引数を返す。現コマンドがC_PUSH,C_POP,C_FUNCTION,C_CALLの場合のみ
