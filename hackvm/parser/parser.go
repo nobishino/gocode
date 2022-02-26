@@ -2,6 +2,7 @@ package parser
 
 import (
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -44,19 +45,48 @@ func (p *Parser) Advance() {
 	p.current++
 }
 
+const (
+	add           = "add"
+	sub           = "sub"
+	neg           = "neg"
+	eq            = "eq"
+	gt            = "gt"
+	lt            = "lt"
+	and           = "and"
+	or            = "or"
+	not           = "not"
+	push          = "push"
+	pop           = "pop"
+	cmdPush       = "C_PUSH"
+	cmdArithmetic = "C_ARITHMETIC"
+)
+
 // 現コマンドの種類を返す。算術コマンドはすべてC_ARITHMETICが返される
 func (p *Parser) CommandType() string {
-	return "C_ARITHMETIC"
+	switch p.cmds[p.current][0] {
+	case push:
+		return cmdPush
+	case add, sub, neg, eq, gt, lt, and, or, not:
+		return cmdArithmetic
+	}
+	panic("undefined command type") // TODO: validate when advance is invoked
 }
 
 // 現コマンドの最初の引数を返す。　C_ARITHMETICの場合、コマンド自体(add,subなど)が返される。
 // 現コマンドがC_RETURNの場合、本メソッドは呼ばないようにする
 func (p *Parser) Arg1() string {
-	return p.cmds[p.current][0] // if arithmetic
+	if p.CommandType() == "C_ARITHMETIC" {
+		return p.cmds[p.current][0] // if arithmetic
+	}
+	return p.cmds[p.current][1]
 }
 
 // 現コマンドの2番目の引数を返す。現コマンドがC_PUSH,C_POP,C_FUNCTION,C_CALLの場合のみ
 // 本メソッドを呼ぶようにする。
 func (p *Parser) Arg2() int {
-	return 0
+	v, err := strconv.Atoi(p.cmds[p.current][2])
+	if err != nil {
+		panic(err) // FIXME validate when advance
+	}
+	return v
 }
