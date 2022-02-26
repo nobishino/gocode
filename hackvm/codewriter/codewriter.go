@@ -23,6 +23,22 @@ func (c *CodeWriter) SetFileName(n string) {
 
 //与えられた算術コマンドをアッセンブリーコードに変換し、それを書き込む
 func (c *CodeWriter) WriteArithmetic(command string) error {
+	code := `// add
+@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+M=D+M
+@SP
+M=M+1
+`
+	_, err := io.WriteString(c.out, code)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
