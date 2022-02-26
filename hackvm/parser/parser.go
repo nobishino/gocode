@@ -34,7 +34,7 @@ func New(r io.Reader) *Parser {
 
 // HasMoreCommandsは、入力において更にコマンドが存在するかを返す
 func (p *Parser) HasMoreCommands() bool {
-	return p.current < len(p.cmds)
+	return p.current+1 < len(p.cmds)
 }
 
 // 入力から次のコマンドを読み、それを現コマンドとする。
