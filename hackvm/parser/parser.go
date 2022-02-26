@@ -22,11 +22,15 @@ const (
 	pop           = "pop"
 	cmdPush       = "C_PUSH"
 	cmdArithmetic = "C_ARITHMETIC"
+	invalidArg2   = -1
 )
 
 type Parser struct {
 	cmds    [][]string
 	current int
+	command string
+	arg1    string
+	arg2    int
 }
 
 func New(r io.Reader) *Parser {
@@ -61,29 +65,35 @@ func (p *Parser) HasMoreCommands() bool {
 // 最初は現コマンドは空になる
 func (p *Parser) Advance() error {
 	p.current++
-	if err := validate(p.cmds[p.current]); err != nil {
-		return errors.WithMessagef(err, "invalid command at %d th line", p.current)
+	if err := p.validate(p.cmds[p.current]); err != nil {
+		return errors.WithMessagef(err, "invalid command at %d th line:\n%s", p.current, p.cmds[p.current])
 	}
 	return nil
 }
 
-func validate(cmd []string) error {
-	if len(cmd) < 2 {
+func (p *Parser) validate(cmd []string) error {
+	if len(cmd) < 1 {
 		return errors.Errorf("command should have at least 2 words, but got %d", len(cmd))
 	}
-	switch cmd[1] {
+	switch cmd[0] {
 	case cmdPush:
 		if len(cmd) != 3 {
 			return errors.Errorf("push command should have exactly 3 words, but got %d", len(cmd))
 		}
-		_, err := strconv.Atoi(cmd[2])
+		v, err := strconv.Atoi(cmd[2])
 		if err != nil {
 			return errors.Wrap(err, "failed to parse 2nd argument of push/pop command")
 		}
+		p.command = cmd[0]
+		p.arg1 = cmd[1]
+		p.arg2 = v
 	case add, sub, neg, eq, gt, lt, and, or, not:
 		if len(cmd) != 1 {
 			return errors.Errorf("push command should have exactly 1 word, but got %d", len(cmd))
 		}
+		p.command = cmdArithmetic
+		p.arg1 = cmd[0]
+		p.arg2 = invalidArg2
 	}
 	return nil
 }
