@@ -18,6 +18,7 @@ func TestParserArithmetic(t *testing.T) {
 		{"sub", []string{"sub"}},
 		{"add\nsub\nneg", []string{"add", "sub", "neg"}},
 		{"neg\neq\ngt\nlt\nand\nor\nnot\n", []string{"neg", "eq", "gt", "lt", "and", "or", "not"}},
+		{"// begin code\nadd // comment", []string{"add"}},
 	}
 	for _, tc := range testcases {
 		p := parser.New(strings.NewReader(tc.in))
