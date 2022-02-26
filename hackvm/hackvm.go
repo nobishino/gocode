@@ -26,10 +26,11 @@ func init() {
 
 func exec() error {
 	flag.Parse()
-	if len(os.Args) < 2 {
-		return errors.New("need exactly 1 argument")
+	args := flag.Args()
+	if len(args) < 1 {
+		return errors.New("need at least 1 argument")
 	}
-	srcPath := os.Args[1]
+	srcPath := args[0] // TODO handle multiple source files
 	f, err := os.Open(srcPath)
 	if err != nil {
 		return err
