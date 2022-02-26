@@ -18,6 +18,10 @@ func TestParserArithmetic(t *testing.T) {
 	}
 	for _, tc := range testcases {
 		p := parser.New(strings.NewReader(tc.in))
+		if !p.HasMoreCommands() {
+			t.Fatal("parser should have at least 1 command")
+		}
+		p.Advance()
 		gotType := p.CommandType()
 		if gotType != wantType {
 			t.Errorf("want %q, but got %q", wantType, gotType)
