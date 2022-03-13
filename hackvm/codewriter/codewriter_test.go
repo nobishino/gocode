@@ -38,6 +38,18 @@ D=M
 M=D
 `,
 		},
+		{
+			command: "C_PUSH", segment: "static", index: 7,
+			want: `// push static 7
+@filename.7
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
 	}
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
