@@ -17,6 +17,7 @@ func TestTranslate(t *testing.T) {
 	}{
 		{in: "SimpleAdd.vm", want: "SimpleAdd.asm"},
 		{in: "StackTest.vm", want: "StackTest.asm"},
+		{in: "StaticTest.vm", want: "StaticTest.asm"},
 	}
 	for _, tc := range testcases {
 		r := openFile(t, tc.in)
