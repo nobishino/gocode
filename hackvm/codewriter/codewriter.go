@@ -59,6 +59,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 		switch segment {
 		case "constant":
 			code = c.codePushConstant(index)
+		case "static":
+			code = c.codePushStatic(index)
 		}
 	}
 	if code == "" {
@@ -93,6 +95,19 @@ A=M
 D=M
 @%[2]s.%[1]d
 M=D
+`
+	return fmt.Sprintf(format, index, c.fileName)
+}
+
+func (c *CodeWriter) codePushStatic(index int) string {
+	format := `// push static %[1]d
+@%[2]s.%[1]d
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
 `
 	return fmt.Sprintf(format, index, c.fileName)
 }
