@@ -21,6 +21,7 @@ const (
 	push          = "push"
 	pop           = "pop"
 	cmdPush       = "C_PUSH"
+	cmdPop        = "C_POP"
 	cmdArithmetic = "C_ARITHMETIC"
 	invalidArg2   = -1
 )
@@ -76,9 +77,9 @@ func (p *Parser) validate(cmd []string) error {
 		return errors.Errorf("command should have at least 2 words, but got %d", len(cmd))
 	}
 	switch cmd[0] {
-	case cmdPush:
+	case cmdPush, cmdPop:
 		if len(cmd) != 3 {
-			return errors.Errorf("push command should have exactly 3 words, but got %d", len(cmd))
+			return errors.Errorf("push/pop command should have exactly 3 words, but got %d", len(cmd))
 		}
 		v, err := strconv.Atoi(cmd[2])
 		if err != nil {
@@ -103,6 +104,8 @@ func (p *Parser) CommandType() string {
 	switch p.cmds[p.current][0] {
 	case push:
 		return cmdPush
+	case pop:
+		return cmdPop
 	case add, sub, neg, eq, gt, lt, and, or, not:
 		return cmdArithmetic
 	}
