@@ -59,8 +59,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 		switch segment {
 		case "static":
 			code = c.codePopStatic(index)
-		case "local":
-			code = c.codePopLocal(index)
+		case "local", "argument", "this", "that":
+			code = c.codePopLocal(segment, index)
 		}
 	case "C_PUSH":
 		switch segment {
@@ -68,8 +68,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 			code = c.codePushConstant(index)
 		case "static":
 			code = c.codePushStatic(index)
-		case "local":
-			code = c.codePushLocal(index)
+		case "local", "argument", "this", "that":
+			code = c.codePushLocal(segment, index)
 		}
 	}
 	if code == "" {
@@ -121,9 +121,20 @@ M=M+1
 	return fmt.Sprintf(format, index, c.fileName)
 }
 
-func (c *CodeWriter) codePopLocal(index int) string {
-	format := `// pop local %[1]d
-@LCL
+var segmentToSymbol = map[string]string{
+	"local":    "LCL",
+	"argument": "ARG",
+	"this":     "THIS",
+	"that":     "THAT",
+}
+
+func (c *CodeWriter) codePopLocal(segment string, index int) string {
+	baseAddrSymbol, ok := segmentToSymbol[segment]
+	if !ok {
+		panic(fmt.Sprintf("invalid segment name %q", segment))
+	}
+	format := `// pop %[2]s %[1]d
+@%[3]s
 D=M
 @%[1]d
 D=D+A
@@ -137,14 +148,18 @@ D=M
 A=M
 M=D
 `
-	return fmt.Sprintf(format, index)
+	return fmt.Sprintf(format, index, segment, baseAddrSymbol)
 }
 
-func (c *CodeWriter) codePushLocal(index int) string {
-	format := `// push local %[1]d
+func (c *CodeWriter) codePushLocal(segment string, index int) string {
+	baseAddrSymbol, ok := segmentToSymbol[segment]
+	if !ok {
+		panic(fmt.Sprintf("invalid segment name %q", segment))
+	}
+	format := `// push %[2]s %[1]d
 @%[1]d
 D=A
-@LCL
+@%[3]s
 D=D+M
 A=D
 D=M
@@ -154,7 +169,7 @@ M=D
 @SP
 M=M+1
 `
-	return fmt.Sprintf(format, index)
+	return fmt.Sprintf(format, index, segment, baseAddrSymbol)
 }
 
 func (c *CodeWriter) unaryArithmetic(command string) string {
