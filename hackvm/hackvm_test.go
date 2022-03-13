@@ -21,7 +21,7 @@ func TestTranslate(t *testing.T) {
 	for _, tc := range testcases {
 		r := openFile(t, tc.in)
 		out := new(strings.Builder)
-		hackvm.Translate(out, r)
+		hackvm.Translate(out, r, tc.in)
 
 		want := new(strings.Builder)
 		if _, err := io.Copy(want, openFile(t, tc.want)); err != nil {
