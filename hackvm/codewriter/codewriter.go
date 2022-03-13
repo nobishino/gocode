@@ -10,6 +10,7 @@ import (
 type CodeWriter struct {
 	out             io.Writer
 	comparisonIndex int
+	fileName        string
 }
 
 //出力ファイル/ストリームを開き書き込む準備を行う
@@ -20,8 +21,8 @@ func New(w io.Writer) *CodeWriter {
 }
 
 // CodeWriterに、あたらしいVMファイルの変換が開始したことを伝える
-func (c *CodeWriter) SetFileName(n string) {
-
+func (c *CodeWriter) SetFileName(name string) {
+	c.fileName = name
 }
 
 //与えられた算術コマンドをアッセンブリーコードに変換し、それを書き込む
@@ -90,10 +91,10 @@ func (c *CodeWriter) codePopStatic(index int) string {
 M=M-1
 A=M
 D=M
-@Xxx.%[1]d
+@%[2]s.%[1]d
 M=D
 `
-	return fmt.Sprintf(format, index)
+	return fmt.Sprintf(format, index, c.fileName)
 }
 
 func (c *CodeWriter) unaryArithmetic(command string) string {

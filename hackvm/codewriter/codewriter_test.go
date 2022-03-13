@@ -34,7 +34,7 @@ M=M+1
 M=M-1
 A=M
 D=M
-@Xxx.5
+@filename.5
 M=D
 `,
 		},
@@ -42,6 +42,7 @@ M=D
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
 		writer := codewriter.New(&buf)
+		writer.SetFileName("filename")
 
 		err := writer.WritePushPop(c.command, c.segment, c.index)
 		if err != nil {
