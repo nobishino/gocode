@@ -69,21 +69,19 @@ M=D
 `,
 		},
 		{
-			command: "C_POP", segment: "local", index: 1,
-			want: `// pop local 1
+			command: "C_PUSH", segment: "local", index: 3,
+			want: `// push local 3
+@3
+D=A
 @LCL
+D=D+M
+A=D
 D=M
-@1
-D=D+A
-@R13 // general register
+@SP
+A=M
 M=D
 @SP
-M=M-1
-A=M
-D=M
-@R13 // general register
-A=M
-M=D
+M=M+1
 `,
 		},
 	}

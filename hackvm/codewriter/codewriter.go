@@ -68,6 +68,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 			code = c.codePushConstant(index)
 		case "static":
 			code = c.codePushStatic(index)
+		case "local":
+			code = c.codePushLocal(index)
 		}
 	}
 	if code == "" {
@@ -134,6 +136,23 @@ D=M
 @R13 // general register
 A=M
 M=D
+`
+	return fmt.Sprintf(format, index)
+}
+
+func (c *CodeWriter) codePushLocal(index int) string {
+	format := `// push local %[1]d
+@%[1]d
+D=A
+@LCL
+D=D+M
+A=D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
 `
 	return fmt.Sprintf(format, index)
 }
