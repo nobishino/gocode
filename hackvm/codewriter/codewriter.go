@@ -59,6 +59,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 		switch segment {
 		case "static":
 			code = c.codePopStatic(index)
+		case "local":
+			code = c.codePopLocal(index)
 		}
 	case "C_PUSH":
 		switch segment {
@@ -115,6 +117,25 @@ M=D
 M=M+1
 `
 	return fmt.Sprintf(format, index, c.fileName)
+}
+
+func (c *CodeWriter) codePopLocal(index int) string {
+	format := `// pop local %[1]d
+@LCL
+D=M
+@%[1]d
+D=D+A
+@R13 // general register
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@R13 // general register
+A=M
+M=D
+`
+	return fmt.Sprintf(format, index)
 }
 
 func (c *CodeWriter) unaryArithmetic(command string) string {

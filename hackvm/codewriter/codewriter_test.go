@@ -50,6 +50,42 @@ M=D
 M=M+1
 `,
 		},
+		{
+			command: "C_POP", segment: "local", index: 1,
+			want: `// pop local 1
+@LCL
+D=M
+@1
+D=D+A
+@R13 // general register
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@R13 // general register
+A=M
+M=D
+`,
+		},
+		{
+			command: "C_POP", segment: "local", index: 1,
+			want: `// pop local 1
+@LCL
+D=M
+@1
+D=D+A
+@R13 // general register
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@R13 // general register
+A=M
+M=D
+`,
+		},
 	}
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
