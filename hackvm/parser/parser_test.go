@@ -59,6 +59,7 @@ func TestParser_MemoryAccess(t *testing.T) {
 		{"push constant 8", []string{"C_PUSH"}, []args{{"constant", 8}}},
 		{"push constant 7\npush constant 8", []string{"C_PUSH", "C_PUSH"}, []args{{"constant", 7}, {"constant", 8}}},
 		{"pop static 5", []string{"C_POP"}, []args{{"static", 5}}},
+		{"push local 7\npop argument 1", []string{"C_PUSH", "C_POP"}, []args{{"local", 7}, {"argument", 1}}},
 	}
 	for _, tc := range testcases {
 		p := parser.New(strings.NewReader(tc.in))
