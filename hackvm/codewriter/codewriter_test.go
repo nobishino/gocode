@@ -54,7 +54,7 @@ M=M+1
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
 		writer := codewriter.New(&buf)
-		writer.SetFileName("filename")
+		writer.SetFileName("filename.vm")
 
 		err := writer.WritePushPop(c.command, c.segment, c.index)
 		if err != nil {

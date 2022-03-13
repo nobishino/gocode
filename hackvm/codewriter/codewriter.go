@@ -3,6 +3,7 @@ package codewriter
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -21,8 +22,12 @@ func New(w io.Writer) *CodeWriter {
 }
 
 // CodeWriterに、あたらしいVMファイルの変換が開始したことを伝える
+// .vm拡張子以外を渡すとpanicする
 func (c *CodeWriter) SetFileName(name string) {
-	c.fileName = name
+	if !strings.HasSuffix(name, ".vm") {
+		panic(fmt.Sprintf("file name must have extension '.vm'. got: %q", name))
+	}
+	c.fileName = name[:len(name)-3]
 }
 
 //与えられた算術コマンドをアッセンブリーコードに変換し、それを書き込む
