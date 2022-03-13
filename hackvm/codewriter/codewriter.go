@@ -3,6 +3,7 @@ package codewriter
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -10,6 +11,7 @@ import (
 type CodeWriter struct {
 	out             io.Writer
 	comparisonIndex int
+	fileName        string
 }
 
 //出力ファイル/ストリームを開き書き込む準備を行う
@@ -20,8 +22,12 @@ func New(w io.Writer) *CodeWriter {
 }
 
 // CodeWriterに、あたらしいVMファイルの変換が開始したことを伝える
-func (c *CodeWriter) SetFileName(n string) {
-
+// .vm拡張子以外を渡すとpanicする
+func (c *CodeWriter) SetFileName(name string) {
+	if !strings.HasSuffix(name, ".vm") {
+		panic(fmt.Sprintf("file name must have extension '.vm'. got: %q", name))
+	}
+	c.fileName = name[:len(name)-3]
 }
 
 //与えられた算術コマンドをアッセンブリーコードに変換し、それを書き込む
@@ -47,6 +53,37 @@ func (c *CodeWriter) WriteArithmetic(command string) error {
 
 //C_PUSHまたはC_POPコマンドをアッセンブリーに変換しそれを書き込む
 func (c *CodeWriter) WritePushPop(command string, segment string, index int) error {
+	var code string
+	switch command {
+	case "C_POP":
+		switch segment {
+		case "static":
+			code = c.codePopStatic(index)
+		case "local", "argument", "this", "that":
+			code = c.codePopLocal(segment, index)
+		}
+	case "C_PUSH":
+		switch segment {
+		case "constant":
+			code = c.codePushConstant(index)
+		case "static":
+			code = c.codePushStatic(index)
+		case "local", "argument", "this", "that":
+			code = c.codePushLocal(segment, index)
+		}
+	}
+	if code == "" {
+		panic(fmt.Sprintf("undefined. command: %q, segment %q", command, segment))
+	}
+	_, err := io.WriteString(c.out, code)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *CodeWriter) codePushConstant(index int) string {
 	format := `// push constant %[1]d
 @%[1]d
 D=A
@@ -56,13 +93,83 @@ M=D
 @SP
 M=M+1
 `
-	code := fmt.Sprintf(format, index)
-	_, err := io.WriteString(c.out, code)
-	if err != nil {
-		return err
-	}
+	return fmt.Sprintf(format, index)
+}
 
-	return nil
+func (c *CodeWriter) codePopStatic(index int) string {
+	format := `// pop static %[1]d
+@SP
+M=M-1
+A=M
+D=M
+@%[2]s.%[1]d
+M=D
+`
+	return fmt.Sprintf(format, index, c.fileName)
+}
+
+func (c *CodeWriter) codePushStatic(index int) string {
+	format := `// push static %[1]d
+@%[2]s.%[1]d
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+	return fmt.Sprintf(format, index, c.fileName)
+}
+
+var segmentToSymbol = map[string]string{
+	"local":    "LCL",
+	"argument": "ARG",
+	"this":     "THIS",
+	"that":     "THAT",
+}
+
+func (c *CodeWriter) codePopLocal(segment string, index int) string {
+	baseAddrSymbol, ok := segmentToSymbol[segment]
+	if !ok {
+		panic(fmt.Sprintf("invalid segment name %q", segment))
+	}
+	format := `// pop %[2]s %[1]d
+@%[3]s
+D=M
+@%[1]d
+D=D+A
+@R13 // general register
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@R13 // general register
+A=M
+M=D
+`
+	return fmt.Sprintf(format, index, segment, baseAddrSymbol)
+}
+
+func (c *CodeWriter) codePushLocal(segment string, index int) string {
+	baseAddrSymbol, ok := segmentToSymbol[segment]
+	if !ok {
+		panic(fmt.Sprintf("invalid segment name %q", segment))
+	}
+	format := `// push %[2]s %[1]d
+@%[1]d
+D=A
+@%[3]s
+D=D+M
+A=D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+	return fmt.Sprintf(format, index, segment, baseAddrSymbol)
 }
 
 func (c *CodeWriter) unaryArithmetic(command string) string {

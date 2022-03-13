@@ -27,10 +27,118 @@ M=D
 M=M+1
 `,
 		},
+		{
+			command: "C_POP", segment: "static", index: 5,
+			want: `// pop static 5
+@SP
+M=M-1
+A=M
+D=M
+@filename.5
+M=D
+`,
+		},
+		{
+			command: "C_PUSH", segment: "static", index: 7,
+			want: `// push static 7
+@filename.7
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
+		{
+			command: "C_POP", segment: "local", index: 1,
+			want: `// pop local 1
+@LCL
+D=M
+@1
+D=D+A
+@R13 // general register
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@R13 // general register
+A=M
+M=D
+`,
+		},
+		{
+			command: "C_PUSH", segment: "local", index: 3,
+			want: `// push local 3
+@3
+D=A
+@LCL
+D=D+M
+A=D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
+		{
+			command: "C_POP", segment: "argument", index: 4,
+			want: `// pop argument 4
+@ARG
+D=M
+@4
+D=D+A
+@R13 // general register
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@R13 // general register
+A=M
+M=D
+`,
+		},
+		{
+			command: "C_PUSH", segment: "this", index: 9,
+			want: `// push this 9
+@9
+D=A
+@THIS
+D=D+M
+A=D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
+		{
+			command: "C_PUSH", segment: "that", index: 7,
+			want: `// push that 7
+@7
+D=A
+@THAT
+D=D+M
+A=D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
 	}
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
 		writer := codewriter.New(&buf)
+		writer.SetFileName("filename.vm")
 
 		err := writer.WritePushPop(c.command, c.segment, c.index)
 		if err != nil {
