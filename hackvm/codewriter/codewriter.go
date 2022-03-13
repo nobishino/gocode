@@ -47,6 +47,31 @@ func (c *CodeWriter) WriteArithmetic(command string) error {
 
 //C_PUSHまたはC_POPコマンドをアッセンブリーに変換しそれを書き込む
 func (c *CodeWriter) WritePushPop(command string, segment string, index int) error {
+	var code string
+	switch command {
+	case "C_POP":
+		switch segment {
+		case "static":
+			code = c.codePopStatic(index)
+		}
+	case "C_PUSH":
+		switch segment {
+		case "constant":
+			code = c.codePushConstant(index)
+		}
+	}
+	if code == "" {
+		panic(fmt.Sprintf("undefined. command: %q, segment %q", command, segment))
+	}
+	_, err := io.WriteString(c.out, code)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *CodeWriter) codePushConstant(index int) string {
 	format := `// push constant %[1]d
 @%[1]d
 D=A
@@ -56,13 +81,19 @@ M=D
 @SP
 M=M+1
 `
-	code := fmt.Sprintf(format, index)
-	_, err := io.WriteString(c.out, code)
-	if err != nil {
-		return err
-	}
+	return fmt.Sprintf(format, index)
+}
 
-	return nil
+func (c *CodeWriter) codePopStatic(index int) string {
+	format := `// pop static %[1]d
+@SP
+M=M-1
+A=M
+D=M
+@Xxx.%[1]d
+M=D
+`
+	return fmt.Sprintf(format, index)
 }
 
 func (c *CodeWriter) unaryArithmetic(command string) string {
