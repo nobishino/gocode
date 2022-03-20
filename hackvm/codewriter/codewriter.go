@@ -177,7 +177,17 @@ M=M+1
 }
 
 func (c *CodeWriter) codePushTemp(index int) string {
-	return "push"
+	const tempSegmentOffset = 5
+	format := `// push temp %d
+@R%d
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+	return fmt.Sprintf(format, index, index+tempSegmentOffset)
 }
 
 func (c *CodeWriter) codePopTemp(index int) string {
