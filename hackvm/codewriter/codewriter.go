@@ -61,6 +61,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 			code = c.codePopStatic(index)
 		case "local", "argument", "this", "that":
 			code = c.codePopLocal(segment, index)
+		case "temp":
+			code = c.codePopTemp(index)
 		}
 	case "C_PUSH":
 		switch segment {
@@ -70,6 +72,8 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 			code = c.codePushStatic(index)
 		case "local", "argument", "this", "that":
 			code = c.codePushLocal(segment, index)
+		case "temp":
+			code = c.codePushTemp(index)
 		}
 	}
 	if code == "" {
@@ -170,6 +174,23 @@ M=D
 M=M+1
 `
 	return fmt.Sprintf(format, index, segment, baseAddrSymbol)
+}
+
+func (c *CodeWriter) codePushTemp(index int) string {
+	return "push"
+}
+
+func (c *CodeWriter) codePopTemp(index int) string {
+	const tempSegmentOffset = 5
+	format := `// pop temp %d
+@SP
+M=M-1
+A=M
+D=M
+@R%d
+M=D
+`
+	return fmt.Sprintf(format, index, index+tempSegmentOffset)
 }
 
 func (c *CodeWriter) unaryArithmetic(command string) string {
