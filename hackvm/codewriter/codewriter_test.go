@@ -134,6 +134,29 @@ M=D
 M=M+1
 `,
 		},
+		{
+			command: "C_POP", segment: "temp", index: 6,
+			want: `// pop temp 6
+@SP
+M=M-1
+A=M
+D=M
+@R11
+M=D
+`,
+		},
+		{
+			command: "C_PUSH", segment: "temp", index: 7,
+			want: `// push temp 7
+@R12
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
 	}
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
