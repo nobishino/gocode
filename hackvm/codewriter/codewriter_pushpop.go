@@ -7,6 +7,10 @@ import (
 
 //C_PUSHまたはC_POPコマンドをアッセンブリーに変換しそれを書き込む
 func (c *CodeWriter) WritePushPop(command string, segment string, index int) error {
+	const (
+		pointerSegmentOffset = 3
+		tempSegmentOffset    = 5
+	)
 	var code string
 	switch command {
 	case "C_POP":
@@ -16,7 +20,9 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 		case "local", "argument", "this", "that":
 			code = c.codePopLocal(segment, index)
 		case "temp":
-			code = c.codePopTemp(index)
+			code = c.codePopTempPointer(segment, index, tempSegmentOffset)
+		case "pointer":
+			code = c.codePopTempPointer(segment, index, pointerSegmentOffset)
 		}
 	case "C_PUSH":
 		switch segment {
@@ -27,7 +33,9 @@ func (c *CodeWriter) WritePushPop(command string, segment string, index int) err
 		case "local", "argument", "this", "that":
 			code = c.codePushLocal(segment, index)
 		case "temp":
-			code = c.codePushTemp(index)
+			code = c.codePushTempPointer(segment, index, tempSegmentOffset)
+		case "pointer":
+			code = c.codePushTempPointer(segment, index, pointerSegmentOffset)
 		}
 	}
 	if code == "" {
@@ -130,10 +138,20 @@ M=M+1
 	return fmt.Sprintf(format, index, segment, baseAddrSymbol)
 }
 
-const tempSegmentOffset = 5
+func (c *CodeWriter) codePopTempPointer(segment string, index, offset int) string {
+	format := `// pop %s %d
+@SP
+M=M-1
+A=M
+D=M
+@R%d
+M=D
+`
+	return fmt.Sprintf(format, segment, index, index+offset)
+}
 
-func (c *CodeWriter) codePushTemp(index int) string {
-	format := `// push temp %d
+func (c *CodeWriter) codePushTempPointer(segment string, index, offset int) string {
+	format := `// push %s %d
 @R%d
 D=M
 @SP
@@ -142,17 +160,5 @@ M=D
 @SP
 M=M+1
 `
-	return fmt.Sprintf(format, index, index+tempSegmentOffset)
-}
-
-func (c *CodeWriter) codePopTemp(index int) string {
-	format := `// pop temp %d
-@SP
-M=M-1
-A=M
-D=M
-@R%d
-M=D
-`
-	return fmt.Sprintf(format, index, index+tempSegmentOffset)
+	return fmt.Sprintf(format, segment, index, index+offset)
 }
