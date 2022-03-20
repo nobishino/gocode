@@ -157,6 +157,52 @@ M=D
 M=M+1
 `,
 		},
+		{
+			command: "C_POP", segment: "pointer", index: 0,
+			want: `// pop pointer 0
+@SP
+M=M-1
+A=M
+D=M
+@R3
+M=D
+`,
+		},
+		{
+			command: "C_POP", segment: "pointer", index: 1,
+			want: `// pop pointer 1
+@SP
+M=M-1
+A=M
+D=M
+@R4
+M=D
+`,
+		},
+		{
+			command: "C_PUSH", segment: "pointer", index: 0,
+			want: `// push pointer 0
+@R3
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
+		{
+			command: "C_PUSH", segment: "pointer", index: 1,
+			want: `// push pointer 1
+@R4
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`,
+		},
 	}
 	for _, c := range testcases {
 		var buf bytes.Buffer // 書き込み先(ファイルの代わりだけどテスト用にBufferを使う)
