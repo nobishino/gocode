@@ -92,3 +92,44 @@ func TestParser_MemoryAccess(t *testing.T) {
 		}
 	}
 }
+
+func TestParser_ProgramFlow(t *testing.T) {
+	type args struct {
+		arg1 string
+		arg2 int
+	}
+	testcases := []struct {
+		in      string
+		cmdType []string
+		arg     []args
+	}{
+		{"label xxx", []string{"C_LABEL"}, []args{{arg1: "xxx"}}},
+		{"goto yyy", []string{"C_GOTO"}, []args{{arg1: "yyy"}}},
+		{"if-goto zzz", []string{"C_IF"}, []args{{arg1: "zzz"}}},
+	}
+	for _, tc := range testcases {
+		p := parser.New(strings.NewReader(tc.in))
+		for idx := 0; idx < len(tc.arg); idx++ {
+			if !p.HasMoreCommands() {
+				t.Fatalf("there should be %d commands, but got only %d commands",
+					len(tc.arg), idx)
+			}
+			if err := p.Advance(); err != nil {
+				t.Fatal(err)
+			}
+			gotType := p.CommandType()
+			wantCmdType := tc.cmdType[idx]
+			if gotType != wantCmdType {
+				t.Errorf("want %q, but got %q", wantCmdType, gotType)
+			}
+			gotArg1 := p.Arg1()
+			wantArg1 := tc.arg[idx].arg1
+			if gotArg1 != wantArg1 {
+				t.Errorf("want %q, but got %q", wantArg1, gotArg1)
+			}
+		}
+		if p.HasMoreCommands() {
+			t.Errorf("there should not be more than %d commands", len(tc.arg))
+		}
+	}
+}

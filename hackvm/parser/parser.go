@@ -20,9 +20,15 @@ const (
 	not           = "not"
 	push          = "push"
 	pop           = "pop"
+	label         = "label"
+	goTo          = "goto"
+	ifGoTo        = "if-goto"
 	cmdPush       = "C_PUSH"
 	cmdPop        = "C_POP"
 	cmdArithmetic = "C_ARITHMETIC"
+	cmdLabel      = "C_LABEL"
+	cmdGoto       = "C_GOTO"
+	cmdIf         = "C_IF"
 	invalidArg2   = -1
 )
 
@@ -108,6 +114,12 @@ func (p *Parser) CommandType() string {
 		return cmdPop
 	case add, sub, neg, eq, gt, lt, and, or, not:
 		return cmdArithmetic
+	case label:
+		return cmdLabel
+	case goTo:
+		return cmdGoto
+	case ifGoTo:
+		return cmdIf
 	}
 	panic("undefined command type") // TODO: validate when advance is invoked
 }
