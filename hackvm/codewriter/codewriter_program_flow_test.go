@@ -65,3 +65,44 @@ func TestWriteLabel(t *testing.T) {
 		})
 	}
 }
+func TestWriteGoto(t *testing.T) {
+	const wantErr = true
+	testcases := []struct {
+		label    string
+		fileName string
+		want     string
+		err      bool
+	}{
+		{
+			label:    "xyz",
+			fileName: "Test1.vm",
+			want: `// goto xyz
+@label_Test1_xyz
+A;JMP
+`,
+		},
+	}
+	for _, c := range testcases {
+		t.Run(c.label, func(t *testing.T) {
+			var buf bytes.Buffer
+			writer := codewriter.New(&buf)
+
+			writer.SetFileName(c.fileName)
+			err := writer.WriteGoto(c.label)
+			if err != nil && !c.err {
+				t.Fatal(err)
+			}
+			if c.err {
+				if err == nil {
+					t.Fatal("want non-nil error but got nil")
+				}
+				return
+			}
+
+			got := buf.String() // 結果を取り出す
+			if diff := cmp.Diff(c.want, got); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
