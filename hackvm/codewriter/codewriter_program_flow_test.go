@@ -17,6 +17,13 @@ func TestWriteLabel(t *testing.T) {
 		err      bool
 	}{
 		{
+			label:    "xyz",
+			fileName: "Test1.vm",
+			want: `// label xyz
+(label_Test1_xyz)
+`,
+		},
+		{
 			label:    "x_.:123",
 			fileName: "Test.vm",
 			want: `// label x_.:123
