@@ -78,7 +78,7 @@ func TestWriteGoto(t *testing.T) {
 			fileName: "Test1.vm",
 			want: `// goto xyz
 @label_Test1_xyz
-A;JMP
+0;JMP
 `,
 		},
 	}
