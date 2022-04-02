@@ -105,3 +105,7 @@ A=M
 	}
 	return nil
 }
+
+func (c *CodeWriter) WriteCall(funcName string, argCount int) error {
+	return nil
+}

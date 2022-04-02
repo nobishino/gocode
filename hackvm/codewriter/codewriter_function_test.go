@@ -157,3 +157,44 @@ A=M
 		})
 	}
 }
+
+func TestWriteFunctionCall(t *testing.T) {
+	testcases := []struct {
+		funcName string
+		numArgs  int
+		fileName string
+		want     string
+		err      bool
+	}{
+		{
+			funcName: "f",
+			numArgs:  1,
+			fileName: "Test.vm",
+			want: `// call f 1
+`,
+		},
+	}
+	for _, c := range testcases {
+		t.Run(c.funcName, func(t *testing.T) {
+			var buf bytes.Buffer
+			writer := codewriter.New(&buf)
+
+			writer.SetFileName(c.fileName)
+			err := writer.WriteCall(c.funcName, c.numArgs)
+			if err != nil && !c.err {
+				t.Fatal(err)
+			}
+			if c.err {
+				if err == nil {
+					t.Fatal("want non-nil error but got nil")
+				}
+				return
+			}
+
+			got := buf.String() // 結果を取り出す
+			if diff := cmp.Diff(c.want, got); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
