@@ -104,7 +104,3 @@ M=M+1
 	c.comparisonIndex++
 	return result
 }
-
-func (c *CodeWriter) WriteReturn() error {
-	return nil
-}
