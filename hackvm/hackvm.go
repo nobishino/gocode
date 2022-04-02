@@ -76,6 +76,18 @@ func Translate(w io.Writer, r io.Reader, fileName string) error {
 			if err := cw.WritePushPop(p.CommandType(), p.Arg1(), p.Arg2()); err != nil {
 				return err
 			}
+		case "C_LABEL":
+			if err := cw.WriteLabel(p.Arg1()); err != nil {
+				return err
+			}
+		case "C_GOTO":
+			if err := cw.WriteGoto(p.Arg1()); err != nil {
+				return err
+			}
+		case "C_IF":
+			if err := cw.WriteIf(p.Arg1()); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
