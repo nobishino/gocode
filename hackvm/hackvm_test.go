@@ -22,6 +22,7 @@ func TestTranslate(t *testing.T) {
 		{in: "PointerTest.vm", want: "PointerTest.asm"},
 		// Branching Commands
 		{in: "BasicLoop.vm", want: "BasicLoop.asm"},
+		{in: "FibonacciSeries.vm", want: "FibonacciSeries.asm"},
 	}
 	for _, tc := range testcases {
 		r := openFile(t, tc.in)
