@@ -22,6 +22,9 @@ const (
 	pop           = "pop"
 	label         = "label"
 	goTo          = "goto"
+	function      = "function"
+	call          = "call"
+	return_       = "return"
 	ifGoTo        = "if-goto"
 	cmdPush       = "C_PUSH"
 	cmdPop        = "C_POP"
@@ -29,6 +32,9 @@ const (
 	cmdLabel      = "C_LABEL"
 	cmdGoto       = "C_GOTO"
 	cmdIf         = "C_IF"
+	cmdFunc       = "C_FUNCTION"
+	cmdCall       = "C_CALL"
+	cmdReturn     = "C_RETURN"
 	invalidArg2   = -1
 )
 
@@ -120,6 +126,12 @@ func (p *Parser) CommandType() string {
 		return cmdGoto
 	case ifGoTo:
 		return cmdIf
+	case function:
+		return cmdFunc
+	case call:
+		return cmdCall
+	case return_:
+		return cmdReturn
 	}
 	panic("undefined command type") // TODO: validate when advance is invoked
 }
