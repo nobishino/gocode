@@ -64,24 +64,32 @@ D=M+1
 @SP
 M=D
 // THAT = *(FRAME-1)
+@R13
+D=M
 @1
 A=D-A
 D=M
 @THAT
 M=D
 // THIS = *(FRAME-2)
+@R13
+D=M
 @2
 A=D-A
 D=M
 @THIS
 M=D
 // ARG = *(FRAME-3)
+@R13
+D=M
 @3
 A=D-A
 D=M
 @ARG
 M=D
 // LCL = *(FRAME-4)
+@R13
+D=M
 @4
 A=D-A
 D=M
