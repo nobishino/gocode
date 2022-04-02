@@ -88,6 +88,15 @@ func Translate(w io.Writer, r io.Reader, fileName string) error {
 			if err := cw.WriteIf(p.Arg1()); err != nil {
 				return err
 			}
+		case "C_FUNCTION":
+			if err := cw.WriteFunction(p.Arg1(), p.Arg2()); err != nil {
+				return err
+			}
+		case "C_CALL":
+		case "C_RETURN":
+			if err := cw.WriteReturn(); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
