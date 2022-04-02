@@ -119,7 +119,6 @@ func TestWriteIf(t *testing.T) {
 			want: `// if-goto xyz
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @label_Test1_xyz

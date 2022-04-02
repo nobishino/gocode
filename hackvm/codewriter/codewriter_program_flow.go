@@ -44,7 +44,6 @@ func (c *CodeWriter) WriteIf(label string) error {
 	format := `// if-goto %[1]s
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @label_%[2]s_%[1]s
