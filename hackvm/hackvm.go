@@ -52,6 +52,9 @@ func exec() error {
 		cw.Init()
 
 		for _, src := range dir {
+			if filepath.Ext(src.Name()) != "vm" {
+				continue
+			}
 			if err := func() error {
 				src, err := os.Open(filepath.Join(arg, src.Name()))
 				if err != nil {
@@ -70,7 +73,7 @@ func exec() error {
 		return nil
 	}
 
-	vmFile, err := os.Open(args[0])
+	vmFile, err := os.Open(arg)
 	if err != nil {
 		return errors.WithStack(err)
 	}
