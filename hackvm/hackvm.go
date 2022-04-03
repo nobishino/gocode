@@ -37,6 +37,11 @@ func exec() error {
 		return err
 	}
 	defer out.Close()
+
+	// Initialization
+	cw := codewriter.New(out)
+	cw.Init()
+
 	for _, srcPath := range args {
 		srcPath := srcPath
 		if err := func() error {
@@ -46,7 +51,7 @@ func exec() error {
 			}
 			defer src.Close()
 
-			if err := Translate(out, src, srcPath); err != nil {
+			if err := Translate(cw, src, srcPath); err != nil {
 				return err
 			}
 			return nil
@@ -58,9 +63,9 @@ func exec() error {
 	return nil
 }
 
-func Translate(w io.Writer, r io.Reader, fileName string) error {
+func Translate(cw *codewriter.CodeWriter, r io.Reader, fileName string) error {
+
 	p := parser.New(r)
-	cw := codewriter.New(w)
 	cw.SetFileName(fileName)
 
 	for p.HasMoreCommands() {
@@ -93,6 +98,9 @@ func Translate(w io.Writer, r io.Reader, fileName string) error {
 				return err
 			}
 		case "C_CALL":
+			if err := cw.WriteCall(p.Arg1(), p.Arg2()); err != nil {
+				return err
+			}
 		case "C_RETURN":
 			if err := cw.WriteReturn(); err != nil {
 				return err

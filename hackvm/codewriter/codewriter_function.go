@@ -8,7 +8,7 @@ import (
 
 func (c *CodeWriter) WriteFunction(funcName string, numLocal int) error {
 	format := `// function %[1]s %[2]d
-(function_Test_%[1]s)
+(function_%[1]s)
 `
 	initializeDRegister := `@0
 D=A
@@ -104,4 +104,81 @@ A=M
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+func (c *CodeWriter) WriteCall(funcName string, argCount int) error {
+	if _, err := fmt.Fprint(c.out, c.codeCall(funcName, argCount)); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (c *CodeWriter) codeCall(funcName string, argCount int) string {
+	// %[1]s = funcName
+	// %[2]s = argCount
+	// %[3]s = current file name
+	// %[4]d = globally unique key for "call" VM Command
+	// %[5]d = argCount+5
+	format := `// call %[1]s %[2]d
+// push return-address 
+@return_address_%[4]d
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push LCL
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push ARG
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push THIS
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push THAT
+@THAT
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// ARG = SP-n-5
+@%[5]d
+D=A
+@SP
+D=M-D
+@ARG
+M=D
+// LCL = SP
+@SP
+D=M
+@LCL
+M=D
+// goto %[1]s
+@function_%[1]s
+0;JMP
+(return_address_%[4]d)
+`
+	const frameHeight = 5
+	callCount := c.callCount // globally unique key
+	c.callCount++
+	return fmt.Sprintf(format, funcName, argCount, c.fileName, callCount, argCount+frameHeight)
 }

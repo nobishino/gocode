@@ -21,7 +21,7 @@ func TestWriteFunctionDeclaration(t *testing.T) {
 			numLocals: 3,
 			fileName:  "Test.vm",
 			want: `// function f 3
-(function_Test_f)
+(function_f)
 @0
 D=A
 @SP
@@ -148,6 +148,103 @@ A=M
 			err := writer.WriteReturn()
 			if err != nil {
 				t.Fatal(err)
+			}
+
+			got := buf.String() // 結果を取り出す
+			if diff := cmp.Diff(c.want, got); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestWriteFunctionCall(t *testing.T) {
+	testcases := []struct {
+		funcName string
+		numArgs  int
+		fileName string
+		want     string
+		err      bool
+	}{
+		{
+			funcName: "f",
+			numArgs:  1,
+			fileName: "Test.vm",
+			want: `// call f 1
+// push return-address 
+@return_address_0
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push LCL
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push ARG
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push THIS
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push THAT
+@THAT
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// ARG = SP-n-5
+@6
+D=A
+@SP
+D=M-D
+@ARG
+M=D
+// LCL = SP
+@SP
+D=M
+@LCL
+M=D
+// goto f
+@function_f
+0;JMP
+(return_address_0)
+`,
+		},
+	}
+	for _, c := range testcases {
+		t.Run(c.funcName, func(t *testing.T) {
+			var buf bytes.Buffer
+			writer := codewriter.New(&buf)
+
+			writer.SetFileName(c.fileName)
+			err := writer.WriteCall(c.funcName, c.numArgs)
+			if err != nil && !c.err {
+				t.Fatal(err)
+			}
+			if c.err {
+				if err == nil {
+					t.Fatal("want non-nil error but got nil")
+				}
+				return
 			}
 
 			got := buf.String() // 結果を取り出す
