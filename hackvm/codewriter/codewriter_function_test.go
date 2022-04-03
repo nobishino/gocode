@@ -21,7 +21,7 @@ func TestWriteFunctionDeclaration(t *testing.T) {
 			numLocals: 3,
 			fileName:  "Test.vm",
 			want: `// function f 3
-(function_Test_f)
+(function_f)
 @0
 D=A
 @SP
@@ -224,7 +224,7 @@ D=M
 @LCL
 M=D
 // goto f
-@function_Test_f
+@function_f
 0;JMP
 (return_address_0)
 `,
