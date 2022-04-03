@@ -45,7 +45,7 @@ M=D
 		return errors.WithStack(err)
 	}
 	c.SetFileName("Sys.vm")
-	if err := c.WriteCall("Sys.Init", 0); err != nil {
+	if err := c.WriteCall("Sys.init", 0); err != nil {
 		return err
 	}
 	terminateCode := `// termination

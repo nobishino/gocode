@@ -8,7 +8,7 @@ import (
 
 func (c *CodeWriter) WriteFunction(funcName string, numLocal int) error {
 	format := `// function %[1]s %[2]d
-(function_%[3]s_%[1]s)
+(function_%[1]s)
 `
 	initializeDRegister := `@0
 D=A
@@ -19,7 +19,7 @@ M=D
 @SP
 M=M+1
 `
-	if _, err := fmt.Fprintf(c.out, format, funcName, numLocal, c.fileName); err != nil {
+	if _, err := fmt.Fprintf(c.out, format, funcName, numLocal); err != nil {
 		return errors.WithStack(err)
 	}
 	if numLocal == 0 {
@@ -173,7 +173,7 @@ D=M
 @LCL
 M=D
 // goto %[1]s
-@function_%[3]s_%[1]s
+@function_%[1]s
 0;JMP
 (return_address_%[4]d)
 `

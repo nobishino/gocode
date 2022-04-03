@@ -51,7 +51,7 @@ func exec() error {
 			}
 			defer src.Close()
 
-			if err := Translate(out, src, srcPath); err != nil {
+			if err := Translate(cw, src, srcPath); err != nil {
 				return err
 			}
 			return nil
@@ -63,10 +63,9 @@ func exec() error {
 	return nil
 }
 
-func Translate(w io.Writer, r io.Reader, fileName string) error {
+func Translate(cw *codewriter.CodeWriter, r io.Reader, fileName string) error {
 
 	p := parser.New(r)
-	cw := codewriter.New(w)
 	cw.SetFileName(fileName)
 
 	for p.HasMoreCommands() {
