@@ -93,6 +93,9 @@ func Translate(w io.Writer, r io.Reader, fileName string) error {
 				return err
 			}
 		case "C_CALL":
+			if err := cw.WriteCall(p.Arg1(), p.Arg2()); err != nil {
+				return err
+			}
 		case "C_RETURN":
 			if err := cw.WriteReturn(); err != nil {
 				return err

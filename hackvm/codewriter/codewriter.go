@@ -10,6 +10,7 @@ type CodeWriter struct {
 	out             io.Writer
 	comparisonIndex int
 	fileName        string
+	callCount       int // how many times "call f n" command are written
 }
 
 //出力ファイル/ストリームを開き書き込む準備を行う

@@ -171,6 +171,62 @@ func TestWriteFunctionCall(t *testing.T) {
 			numArgs:  1,
 			fileName: "Test.vm",
 			want: `// call f 1
+// push return-address 
+@return_address_0
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push LCL
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push ARG
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push THIS
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// push THAT
+@THAT
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// ARG = SP-n-5
+@6
+D=A
+@SP
+D=M-D
+@ARG
+M=D
+// LCL = SP
+@SP
+D=M
+@LCL
+M=D
+// goto f
+@function_Test_f
+0;JMP
+(return_address_0)
 `,
 		},
 	}
