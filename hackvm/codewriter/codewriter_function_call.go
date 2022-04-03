@@ -7,6 +7,7 @@ import (
 )
 
 func (c *CodeWriter) WriteFunction(funcName string, numLocal int) error {
+	c.currentFuncName = funcName // label, goto, if-gotoコマンドのために必要
 	format := `// function %[1]s %[2]d
 (function_%[1]s)
 `

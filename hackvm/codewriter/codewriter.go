@@ -12,13 +12,17 @@ type CodeWriter struct {
 	out             io.Writer
 	comparisonIndex int
 	fileName        string
+	currentFuncName string
 	callCount       int // how many times "call f n" command are written
 }
 
 //出力ファイル/ストリームを開き書き込む準備を行う
 func New(w io.Writer) *CodeWriter {
 	return &CodeWriter{
-		out: w,
+		// WriteLabel, WriteGoto, WriteIfの単体テストで用いるための仮の関数名
+		// 実際のVMコードではなんらかのfunctionの内部にしかbranching命令が書かれない
+		currentFuncName: "global",
+		out:             w,
 	}
 }
 
