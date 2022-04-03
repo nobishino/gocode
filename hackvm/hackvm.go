@@ -27,7 +27,15 @@ func exec() error {
 	if len(args) < 1 {
 		return errors.New("need at least 1 argument")
 	}
-	arg := args[0]
+	arg, err := filepath.Abs(args[0])
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	src, err := os.Stat(arg)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
 	outFile := strings.TrimSuffix(filepath.Base(arg), filepath.Ext(arg)) + ".asm"
 
 	out, err := os.Create(outFile)
@@ -36,11 +44,6 @@ func exec() error {
 	}
 	defer out.Close()
 	cw := codewriter.New(out)
-
-	src, err := os.Stat(arg)
-	if err != nil {
-		return errors.WithStack(err)
-	}
 
 	if src.IsDir() {
 		dir, err := os.ReadDir(arg)
@@ -52,9 +55,10 @@ func exec() error {
 		cw.Init()
 
 		for _, src := range dir {
-			if filepath.Ext(src.Name()) != "vm" {
+			if filepath.Ext(src.Name()) != ".vm" {
 				continue
 			}
+			log.Println("tranlating", src.Name())
 			if err := func() error {
 				src, err := os.Open(filepath.Join(arg, src.Name()))
 				if err != nil {
@@ -62,7 +66,7 @@ func exec() error {
 				}
 				defer src.Close()
 
-				if err := Translate(cw, src, src.Name()); err != nil {
+				if err := Translate(cw, src, filepath.Base(src.Name())); err != nil {
 					return err
 				}
 				return nil
