@@ -1,14 +1,16 @@
 package hackvm
 
 import (
-	"errors"
 	"flag"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/nobishino/gocode/hackvm/codewriter"
 	"github.com/nobishino/gocode/hackvm/parser"
+	"github.com/pkg/errors"
 )
 
 func Exec() int {
@@ -19,45 +21,61 @@ func Exec() int {
 	return 0
 }
 
-var outFile string
-
-func init() {
-	flag.StringVar(&outFile, "out", "out.asm", "specify output assembly file name")
-}
-
 func exec() error {
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 1 {
 		return errors.New("need at least 1 argument")
 	}
+	arg := args[0]
+	outFile := strings.TrimSuffix(filepath.Base(arg), filepath.Ext(arg)) + ".asm"
 
 	out, err := os.Create(outFile)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
-
-	// Initialization
 	cw := codewriter.New(out)
-	cw.Init()
 
-	for _, srcPath := range args {
-		srcPath := srcPath
-		if err := func() error {
-			src, err := os.Open(srcPath)
-			if err != nil {
-				return err
-			}
-			defer src.Close()
+	src, err := os.Stat(arg)
+	if err != nil {
+		return errors.WithStack(err)
+	}
 
-			if err := Translate(cw, src, srcPath); err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
-			return err
+	if src.IsDir() {
+		dir, err := os.ReadDir(arg)
+		if err != nil {
+			return errors.WithStack(err)
 		}
+
+		// Initialization
+		cw.Init()
+
+		for _, src := range dir {
+			if err := func() error {
+				src, err := os.Open(filepath.Join(arg, src.Name()))
+				if err != nil {
+					return err
+				}
+				defer src.Close()
+
+				if err := Translate(cw, src, src.Name()); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	vmFile, err := os.Open(args[0])
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err := Translate(cw, vmFile, vmFile.Name()); err != nil {
+		return err
 	}
 
 	return nil
