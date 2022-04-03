@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type CodeWriter struct {
@@ -31,3 +33,28 @@ func (c *CodeWriter) SetFileName(name string) {
 
 // 出力ファイルを閉じる
 func (c *CodeWriter) Close() error { return nil }
+
+func (c *CodeWriter) Init() error {
+	initCode := `// init
+@256
+D=A
+@SP
+M=D
+`
+	if _, err := fmt.Fprint(c.out, initCode); err != nil {
+		return errors.WithStack(err)
+	}
+	c.SetFileName("Sys.vm")
+	if err := c.WriteCall("Sys.Init", 0); err != nil {
+		return err
+	}
+	terminateCode := `// termination
+(TERMINATE)
+@TERMINATE
+0;JMP
+`
+	if _, err := fmt.Fprint(c.out, terminateCode); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}

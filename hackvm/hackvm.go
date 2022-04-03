@@ -37,6 +37,11 @@ func exec() error {
 		return err
 	}
 	defer out.Close()
+
+	// Initialization
+	cw := codewriter.New(out)
+	cw.Init()
+
 	for _, srcPath := range args {
 		srcPath := srcPath
 		if err := func() error {
@@ -59,6 +64,7 @@ func exec() error {
 }
 
 func Translate(w io.Writer, r io.Reader, fileName string) error {
+
 	p := parser.New(r)
 	cw := codewriter.New(w)
 	cw.SetFileName(fileName)
