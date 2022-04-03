@@ -19,15 +19,15 @@ func TestWriteLabel(t *testing.T) {
 		{
 			label:    "xyz",
 			fileName: "Test1.vm",
-			want: `// label xyz
-(label_Test1_xyz)
+			want: `// label global$xyz
+(global$xyz)
 `,
 		},
 		{
 			label:    "x_.:123",
 			fileName: "Test.vm",
-			want: `// label x_.:123
-(label_Test_x_.:123)
+			want: `// label global$x_.:123
+(global$x_.:123)
 `,
 		},
 		{
@@ -75,8 +75,8 @@ func TestWriteGoto(t *testing.T) {
 		{
 			label:    "xyz",
 			fileName: "Test1.vm",
-			want: `// goto xyz
-@label_Test1_xyz
+			want: `// goto global$xyz
+@global$xyz
 0;JMP
 `,
 		},
@@ -116,12 +116,12 @@ func TestWriteIf(t *testing.T) {
 		{
 			label:    "xyz",
 			fileName: "Test1.vm",
-			want: `// if-goto xyz
+			want: `// if-goto global$xyz
 @SP
 M=M-1
 A=M
 D=M
-@label_Test1_xyz
+@global$xyz
 D;JNE
 `,
 		},
