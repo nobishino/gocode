@@ -52,13 +52,5 @@ M=D
 	if err := c.WriteCall("Sys.init", 0); err != nil {
 		return err
 	}
-	terminateCode := `// termination
-(TERMINATE)
-@TERMINATE
-0;JMP
-`
-	if _, err := fmt.Fprint(c.out, terminateCode); err != nil {
-		return errors.WithStack(err)
-	}
 	return nil
 }
