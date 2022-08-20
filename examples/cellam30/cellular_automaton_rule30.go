@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 const ON, OFF = '\u2b1b', '\u2b1c'
-const CELL_COUNT = 51
-const STEP_COUNT = CELL_COUNT
+const CELL_COUNT = 121
+const STEP_COUNT = 70
 
 type Cells [CELL_COUNT]bool
 
