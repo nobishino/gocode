@@ -25,16 +25,18 @@ func main() {
 	c[CELL_COUNT/2] = true
 	for i := 0; i < STEP_COUNT; i++ {
 		fmt.Println(c)
-		c = c.Next()
+		c.Transform()
 	}
 }
 
-func (c Cells) Next() Cells {
+func (c *Cells) Transform() {
 	var next Cells
 	for i := range c {
 		next[i] = c.nextOf(i)
 	}
-	return next
+	for i := range c {
+		c[i] = next[i]
+	}
 }
 
 func (c Cells) nextOf(i int) bool {
