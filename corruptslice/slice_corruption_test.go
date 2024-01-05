@@ -4,7 +4,9 @@ import (
 	"testing"
 )
 
-func TestAppendConsistency(t *testing.T) {
+// メモリーモデル関係のテスト
+func TestAppendConsistency_ExpectFailOccationally(t *testing.T) {
+	t.Skip()
 	for i := 1; ; i++ {
 		s := []int{1}
 		go func() {
