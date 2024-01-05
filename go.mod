@@ -1,7 +1,7 @@
 // これがモジュールパス(module path)
 module github.com/nobishino/gocode
 
-go 1.19
+go 1.21.5
 
 // この部分がdependency information
 require (
