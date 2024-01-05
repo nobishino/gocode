@@ -10,6 +10,7 @@ import (
 
 // corpus = (n, x, y, z)
 func FuzzTestFermatFinalTheorem(f *testing.F) {
+	f.Skip() // わざと失敗するテストを書いているのでスキップ
 	f.Add(uint(3), uint(4), uint(5), uint(6))
 	f.Fuzz(func(t *testing.T, n, x, y, z uint) {
 		skipIfNotPositive(t, n, x, y, z)
