@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	golang.org/x/sync v0.6.0
 	golang.org/x/time v0.1.0
 )
 
